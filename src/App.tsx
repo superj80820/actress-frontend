@@ -1,7 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import StarCard from './components/StarCard.js'
-import AdCard from './components/AdCard.js'
+import StarCard from './components/StarCard'
+import AdCard from './components/AdCard'
 import './App.css';
 
 const useStyles = makeStyles({
