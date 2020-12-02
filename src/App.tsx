@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import StarCard from './components/StarCard'
 import AdCard from './components/AdCard'
+import AppBar from './components/AppBar'
 import './App.css';
 
 const useStyles = makeStyles({
@@ -18,6 +19,7 @@ function App() {
   const classes = useStyles();
   return (
     <div className="App">
+      <AppBar></AppBar>
       <div className={classes.root}>
         <div className={classes.card}>
           <AdCard></AdCard>
