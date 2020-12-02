@@ -20,7 +20,7 @@ function App() {
   return (
     <div className="App">
       <AppBar></AppBar>
-      <div className={classes.root}>
+      <div className={classes.root} style={{ padding: '60px'}}>
         <div className={classes.card}>
           <AdCard></AdCard>
           <StarCard></StarCard>

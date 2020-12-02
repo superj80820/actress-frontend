@@ -23,7 +23,7 @@ export default function ButtonAppBar() {
 
   return (
     <div className={classes.root}>
-      <AppBar position="static" style={{ color: '#000000', background: '#ffffff' }}>
+      <AppBar position="fixed" style={{ color: '#000000', background: '#ffffff'}}>
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
             髒沙發
