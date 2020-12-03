@@ -15,6 +15,11 @@ const useStyles = makeStyles({
   }
 });
 
+
+const urlParams = new URLSearchParams(window.location.search)
+// Workaround: 如果搜尋ID不存在需導到錯誤頁面
+const ID: string = urlParams.get('ID') || '1'
+
 function App() {
   const classes = useStyles();
   return (
@@ -23,7 +28,7 @@ function App() {
       <div className={classes.root} style={{ padding: '60px'}}>
         <div className={classes.card}>
           <AdCard></AdCard>
-          <StarCard></StarCard>
+          <StarCard ID={ID}></StarCard>
         </div>
       </div>
     </div>

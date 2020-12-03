@@ -7,16 +7,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Button from '@material-ui/core/Button';
 import Avatar from '@material-ui/core/Avatar';
 import { red } from '@material-ui/core/colors';
-
-function api<T>(url: string): Promise<T> {
-  return fetch(url)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(response.statusText)
-      }
-      return response.json().then(data => data as T);
-    })
-}
+import getInfoByID from '../repository/face-service';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -44,32 +35,21 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function StarCard() {
+const clickToSearchByStarName = (name: string) => () => window.open(`https://google.com/search?q=${name}`)
+
+export default function StarCard(prop: { ID: string }) {
   const classes = useStyles();
   const [name, setName] = useState('');
   const [preview, setPreview] = useState('');
-  const [detail, setDetail] = useState('');
-
-  interface star {
-    image: string;
-    name: string;
-    detail: string;
-  }
 
   useEffect(() => {
-    async function fetchMyAPI() {
-      const response = await Promise.resolve({
-        name: '水卜さくら',
-        image: 'https://imgur.com/KM360aL.jpg',
-        detail: '很可愛'
-      })
-      // api<star>('http://localhost:8000/star')
-      setName(response.name)
-      setPreview(response.image)
-      setDetail(response.detail)
+    async function fetchAPI() {
+      const info = await getInfoByID(prop.ID)
+      setName(info.name)
+      setPreview(info.image)
     }
-    fetchMyAPI()
-  }, []);
+    fetchAPI()
+  }, [prop]);
 
   return (
     <Card className={classes.root} style={{ width: '100vw' }}>
@@ -81,14 +61,14 @@ export default function StarCard() {
         }
         title={name}
       />
-      <CardMedia
-        className={classes.media}
-        image={preview}
-        title="Paella dish"
-      />
-      <CardContent>
-        <Button variant="outlined">點我搜尋去</Button>
-      </CardContent>
+      {preview ? (<>
+        <CardMedia
+          className={classes.media}
+          image={preview} />
+        <CardContent>
+          <Button onClick={clickToSearchByStarName(name)} variant="outlined">點我搜尋去</Button>
+        </CardContent>
+      </>) : (<div/>)}
     </Card>
   );
 }
