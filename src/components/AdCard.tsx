@@ -2,7 +2,6 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActionArea from '@material-ui/core/CardActionArea';
-import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import Button from '@material-ui/core/Button';
@@ -14,7 +13,9 @@ const useStyles = makeStyles({
     margin: '10px'
   },
   media: {
-    height: 140,
+    height: 0,
+    paddingTop: '56.25%', // 16:9,
+    marginTop:'30'
   },
 });
 
@@ -26,23 +27,27 @@ export default function AdCard() {
       <CardActionArea>
         <CardMedia
           className={classes.media}
-          image="https://p2.bahamut.com.tw/FORUM/welcome/60146_2_1453776329.PNG"
+          image="https://imgur.com/kkkTVKR.png"
           title="Contemplative Reptile"
         />
         <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            尻尻會社
+          <Typography gutterBottom variant="h6" component="h2">
+            如果有幫助找到女優
+          </Typography>
+          <Typography gutterBottom variant="h6" component="h2">
+            您願意的話 歡迎抖內我們的貼圖
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
-            超級老司機
+            替這個免費服務的設備與衛生紙負擔一些錢錢
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            Q口Q
           </Typography>
         </CardContent>
       </CardActionArea>
-      <CardActions>
-        <Button size="small" color="primary">
-          點選至我們的友站
-        </Button>
-      </CardActions>
+      <CardContent>
+        <Button href="https://store.line.me/stickershop/product/12619201" variant="outlined">點選贊助</Button>
+      </CardContent>
     </Card>
   );
 }
