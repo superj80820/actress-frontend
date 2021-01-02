@@ -18,7 +18,8 @@ const useStyles = makeStyles({
 const LIFFQuerys: { [ID: string]: string } = ((liffState) =>
   liffState !== null
     ? liffState
-        .slice(2)
+        .replace("?", "")
+        .replace("/", "")
         .split("&")
         .reduce(
           (a, b) => ({
