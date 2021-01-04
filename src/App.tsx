@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import StarCard from "./components/StarCard";
 import AdCard from "./components/AdCard";
 import AppBar from "./components/AppBar";
+import GoogleAd from "./components/GoogleAd";
 import "./App.css";
 
 const useStyles = makeStyles({
@@ -44,6 +45,7 @@ function App() {
         <div className={classes.card}>
           <AdCard></AdCard>
           <StarCard ID={ID}></StarCard>
+          <GoogleAd></GoogleAd>
         </div>
       </div>
     </div>
