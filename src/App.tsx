@@ -4,6 +4,10 @@ import StarCard from "./components/StarCard";
 import AdCard from "./components/AdCard";
 import AppBar from "./components/AppBar";
 import "./App.css";
+import liff from "@line/liff";
+import getProfile from "./repository/liff-service";
+
+const LIFF_ID = "1654274121-b5mVv5gE";
 
 const useStyles = makeStyles({
   root: {
@@ -36,6 +40,13 @@ const LIFFQuerys: { [ID: string]: string } = ((liffState) =>
 const ID: string = LIFFQuerys.ID || "1";
 
 function App() {
+  liff.init({ liffId: LIFF_ID }).then(async () => {
+    const liffAccessToken = liff.getAccessToken();
+    if (liffAccessToken !== null) {
+      await getProfile(liffAccessToken, LIFF_ID);
+    }
+  });
+
   const classes = useStyles();
   return (
     <div className="App">
