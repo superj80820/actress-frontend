@@ -65,7 +65,7 @@ function App(prop: { LiffId: string }) {
       }}
       variant="outlined"
     >
-      移除我的最愛
+      移除我心愛的女孩
     </Button>
   );
 
@@ -79,7 +79,7 @@ function App(prop: { LiffId: string }) {
       }}
       variant="outlined"
     >
-      加入我的最愛
+      加入我心愛的女孩
     </Button>
   );
 
@@ -116,7 +116,7 @@ function App(prop: { LiffId: string }) {
                 onClick={() => setFavoritesRouteByClick()}
                 color="inherit"
               >
-                我的最愛
+                我心愛的女孩
               </Button>
             </Toolbar>
           </AppBar>
