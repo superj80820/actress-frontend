@@ -5,7 +5,7 @@ import App from "./App";
 import * as serviceWorker from "./serviceWorker";
 import liff from "@line/liff";
 
-const LIFF_ID = "1655529572-4Dy9PYD3";
+const LIFF_ID = "1655529572-bv0kM39q";
 
 liff
   .init({ liffId: LIFF_ID })
