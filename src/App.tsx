@@ -92,7 +92,7 @@ function App(prop: { LiffId: string }) {
         setFavorites(await getFavorites(profile.accountId));
       }
     })();
-  }, []);
+  }, [prop]);
 
   const classes = useStyles();
   return (
@@ -104,7 +104,13 @@ function App(prop: { LiffId: string }) {
             style={{ color: "#000000", background: "#ffffff" }}
           >
             <Toolbar>
-              <Typography variant="h6" className={classes.title}></Typography>
+              <Typography variant="h6" className={classes.title}>
+                {route === "search"
+                  ? "搜尋結果"
+                  : route === "favorites"
+                  ? "我心愛的女孩"
+                  : ""}
+              </Typography>
               {ID !== "" ? (
                 <Button onClick={() => setSerachRouteByClick()} color="inherit">
                   搜尋結果
