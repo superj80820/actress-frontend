@@ -7,7 +7,8 @@ import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Avatar from "@material-ui/core/Avatar";
 import { red } from "@material-ui/core/colors";
-import getInfoByID from "../repository/face-service";
+import getInfoByID, { star } from "../repository/face-service";
+import { verifyProfileResponse } from "../repository/liff-service";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -38,7 +39,22 @@ const useStyles = makeStyles((theme: Theme) =>
 const clickToSearchByStarName = (name: string) => () =>
   window.open(`https://google.com/search?q=${name}`);
 
-export default function StarCard(prop: { ID: string }) {
+export default function StarCard(prop: {
+  Profile: verifyProfileResponse;
+  FavoriteButton: any;
+  ID: string;
+}): any;
+export default function StarCard(prop: {
+  Profile: verifyProfileResponse;
+  FavoriteButton: any;
+  Star: star;
+}): any;
+export default function StarCard(prop: {
+  Profile: verifyProfileResponse;
+  FavoriteButton: any;
+  ID?: string;
+  Star?: star;
+}) {
   const classes = useStyles();
   const copyNameRef = useRef<HTMLDivElement>(null);
   const [name, setName] = useState("");
@@ -61,12 +77,17 @@ export default function StarCard(prop: { ID: string }) {
   };
 
   useEffect(() => {
-    async function fetchAPI() {
-      const info = await getInfoByID(prop.ID);
+    async function fetchAPI(ID: string) {
+      const info = await getInfoByID(ID);
       setName(info.name);
       setPreview(info.image);
     }
-    fetchAPI();
+    if (prop.ID) {
+      fetchAPI(prop.ID);
+    } else if (prop.Star) {
+      setName(prop.Star.name);
+      setPreview(prop.Star.image);
+    }
   }, [prop]);
 
   return (
@@ -92,6 +113,8 @@ export default function StarCard(prop: { ID: string }) {
             <Button onClick={clickToSearchByStarName(name)} variant="outlined">
               點我搜尋去
             </Button>
+            &nbsp;
+            {prop.FavoriteButton()}
           </CardContent>
         </>
       ) : (

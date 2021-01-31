@@ -1,62 +1,162 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
 import StarCard from "./components/StarCard";
 import AdCard from "./components/AdCard";
-import AppBar from "./components/AppBar";
 import "./App.css";
 import liff from "@line/liff";
-import getProfile from "./repository/liff-service";
+import {
+  favorite,
+  addFavorite,
+  verifyProfile,
+  getFavorites,
+  verifyProfileResponse,
+  removeFavorite,
+} from "./repository/liff-service";
 
-const LIFF_ID = "1654274121-b5mVv5gE";
+import { star } from "./repository/face-service";
 
 const useStyles = makeStyles({
   root: {
     display: "flex",
     justifyContent: "center",
   },
+  title: {
+    flexGrow: 1,
+  },
   card: {
     "flex-direction": "column",
   },
 });
 
-const LIFFQuerys: { [ID: string]: string } = ((liffState) =>
-  liffState !== null
-    ? liffState
-        .replace("?", "")
-        .replace("/", "")
-        .split("&")
-        .reduce(
-          (a, b) => ({
-            ...a,
-            ...(([key, value]) => ({
-              [key]: value,
-            }))(b.split("=")),
-          }),
-          {}
-        )
-    : {})(new URLSearchParams(window.location.search).get("liff.state"));
+// yorkworkaround: 如果搜尋ID不存在需導到錯誤頁面
+const urlQuery = new URLSearchParams(window.location.search);
+const ID: string = urlQuery.get("ID") || "";
+// yorkworkaround: 有時間在調成#的route
+const urlRoute = urlQuery.get("route") || "search";
 
-// Workaround: 如果搜尋ID不存在需導到錯誤頁面
-const ID: string = LIFFQuerys.ID || "1";
+function App(prop: { LiffId: string }) {
+  const [favorites, setFavorites] = useState<favorite[]>([]);
+  const [route, setRoute] = useState(urlRoute);
+  const [profile, setProfile] = useState<verifyProfileResponse>();
 
-function App() {
-  liff.init({ liffId: LIFF_ID }).then(async () => {
-    const liffAccessToken = liff.getAccessToken();
-    if (liffAccessToken !== null) {
-      await getProfile(liffAccessToken, LIFF_ID);
+  const setFavoritesRouteByClick = async () => {
+    setRoute("favorites");
+    if (profile) {
+      setFavorites(await getFavorites(profile.accountId));
     }
-  });
+  };
+
+  const setSerachRouteByClick = () => {
+    setRoute("search");
+  };
+
+  const removeFavoriteButton = (faceId: string) => () => (
+    <Button
+      onClick={async () => {
+        if (profile) {
+          await removeFavorite(profile.accountId, faceId);
+          setFavorites(await getFavorites(profile.accountId));
+          alert("移除成功");
+        }
+      }}
+      variant="outlined"
+    >
+      移除我的最愛
+    </Button>
+  );
+
+  const addFavoriteButton = (faceId: string) => () => (
+    <Button
+      onClick={async () => {
+        if (profile) {
+          await addFavorite(profile.accountId, faceId);
+          alert("加入成功");
+        }
+      }}
+      variant="outlined"
+    >
+      加入我的最愛
+    </Button>
+  );
+
+  useEffect(() => {
+    (async () => {
+      const liffAccessToken = liff.getAccessToken();
+      if (liffAccessToken !== null) {
+        const profile = await verifyProfile(liffAccessToken, prop.LiffId);
+        setProfile(profile);
+        setFavorites(await getFavorites(profile.accountId));
+      }
+    })();
+  }, []);
 
   const classes = useStyles();
   return (
     <div className="App">
-      <AppBar></AppBar>
-      <div className={classes.root} style={{ padding: "60px" }}>
-        <div className={classes.card}>
-          <AdCard></AdCard>
-          <StarCard ID={ID}></StarCard>
-        </div>
-      </div>
+      {profile ? (
+        <>
+          <AppBar
+            position="fixed"
+            style={{ color: "#000000", background: "#ffffff" }}
+          >
+            <Toolbar>
+              <Typography variant="h6" className={classes.title}></Typography>
+              {ID !== "" ? (
+                <Button onClick={() => setSerachRouteByClick()} color="inherit">
+                  搜尋結果
+                </Button>
+              ) : (
+                <></>
+              )}
+              <Button
+                onClick={() => setFavoritesRouteByClick()}
+                color="inherit"
+              >
+                我的最愛
+              </Button>
+            </Toolbar>
+          </AppBar>
+          <div className={classes.root} style={{ padding: "60px" }}>
+            <div className={classes.card}>
+              <AdCard></AdCard>
+              {route === "search" && profile ? (
+                <>
+                  <StarCard
+                    Profile={profile}
+                    ID={ID}
+                    FavoriteButton={addFavoriteButton(ID)}
+                  ></StarCard>
+                </>
+              ) : route === "favorites" && profile ? (
+                <>
+                  {favorites.map((item) => (
+                    <StarCard
+                      Profile={profile}
+                      Star={
+                        {
+                          id: item.id,
+                          image: item.preview,
+                          name: item.name,
+                          detail: item.detail,
+                        } as star
+                      }
+                      FavoriteButton={removeFavoriteButton(item.id.toString())}
+                    ></StarCard>
+                  ))}
+                </>
+              ) : (
+                <div></div>
+              )}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div>目前僅支持在Line上使用{profile}</div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
 const URL = 'https://api.worldcrater.com/face-service'
 
-interface star {
+export interface star {
+  id: number;
   image: string;
   name: string;
   detail: string;
@@ -11,9 +12,10 @@ export default async function getInfoByID(ID: string): Promise<star> {
   if (!response.ok) {
     throw new Error(response.statusText)
   }
-  // Workaround: 前端需更改成專用info的API並非使用face+info的API
+  // yorkworkaround: 前端需更改成專用info的API並非使用face+info的API
   const responseJSON = (await response.json())[0]
   return {
+    id: parseInt(ID),
     image: responseJSON.preview,
     name: responseJSON.name,
     detail: responseJSON.detail,
