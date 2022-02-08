@@ -8,7 +8,6 @@ import Button from "@material-ui/core/Button";
 import Avatar from "@material-ui/core/Avatar";
 import { red } from "@material-ui/core/colors";
 import getInfoByID, { star } from "../repository/face-service";
-import { verifyProfileResponse } from "../repository/liff-service";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -40,17 +39,17 @@ const clickToSearchByStarName = (name: string) => () =>
   window.open(`https://google.com/search?q=${name}`);
 
 export default function StarCard(prop: {
-  Profile: verifyProfileResponse;
+  Token: string;
   FavoriteButton: any;
   ID: string;
 }): any;
 export default function StarCard(prop: {
-  Profile: verifyProfileResponse;
+  Token: string;
   FavoriteButton: any;
   Star: star;
 }): any;
 export default function StarCard(prop: {
-  Profile: verifyProfileResponse;
+  Token: string;
   FavoriteButton: any;
   ID?: string;
   Star?: star;

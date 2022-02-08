@@ -1,23 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
+import { createMuiTheme } from "@material-ui/core/styles";
+import Grid from "@material-ui/core/Grid";
+import { ThemeProvider } from "@material-ui/styles";
 import StarCard from "./components/StarCard";
 import AdCard from "./components/AdCard";
+import Cookies from "universal-cookie";
+import LoginCard from "./components/LoginCard";
 import "./App.css";
 import liff from "@line/liff";
 import {
   favorite,
   addFavorite,
-  verifyProfile,
   getFavorites,
-  verifyProfileResponse,
   removeFavorite,
 } from "./repository/liff-service";
 
+import {
+  verifyLIFF,
+  verifyTelegramCode,
+  verifyLineCode,
+  verifyDiscordCode,
+} from "./repository/auth-service";
+
 import { star } from "./repository/face-service";
+
+const theme = createMuiTheme({
+  overrides: {
+    MuiButton: {
+      sizeLarge: {
+        padding: "8px 25px",
+      },
+    },
+  },
+});
 
 const useStyles = makeStyles({
   root: {
@@ -34,19 +54,26 @@ const useStyles = makeStyles({
 
 // yorkworkaround: 如果搜尋ID不存在需導到錯誤頁面
 const urlQuery = new URLSearchParams(window.location.search);
-const ID: string = urlQuery.get("ID") || "";
+
+const Code: string = urlQuery.get("code") || "";
+const ActressIDInLiff: string = urlQuery.get("ID") || "";
+const Platform: string = urlQuery.get("platform") || "";
 // yorkworkaround: 有時間在調成#的route
 const urlRoute = urlQuery.get("route") || "search";
+
+const cookies = new Cookies();
 
 function App(prop: { LiffId: string }) {
   const [favorites, setFavorites] = useState<favorite[]>([]);
   const [route, setRoute] = useState(urlRoute);
-  const [profile, setProfile] = useState<verifyProfileResponse>();
+  const [actressID, setActressID] = useState<string>("");
+  const [token, setToken] = useState<string>(cookies.get("token"));
 
   const setFavoritesRouteByClick = async () => {
     setRoute("favorites");
-    if (profile) {
-      setFavorites(await getFavorites(profile.accountId));
+    if (token) {
+      isCurrentTokenExpire();
+      setFavorites(await getFavorites(token));
     }
   };
 
@@ -54,116 +81,218 @@ function App(prop: { LiffId: string }) {
     setRoute("search");
   };
 
-  const removeFavoriteButton = (faceId: string) => () => (
-    <Button
-      onClick={async () => {
-        if (profile) {
-          await removeFavorite(profile.accountId, faceId);
-          setFavorites(await getFavorites(profile.accountId));
-          alert("移除成功");
-        }
-      }}
-      variant="outlined"
-    >
-      移除我心愛的女孩
-    </Button>
-  );
+  const setTokenAndCookie = (token: string) => {
+    setToken(token);
+    cookies.set("token", token);
+  };
 
-  const addFavoriteButton = (faceId: string) => () => (
-    <Button
-      onClick={async () => {
-        if (profile) {
-          await addFavorite(profile.accountId, faceId);
-          alert("加入成功");
-        }
-      }}
-      variant="outlined"
-    >
-      加入我心愛的女孩
-    </Button>
-  );
+  const removeFavoriteButton = (faceId: string) => () => {
+    return (
+      <Button
+        onClick={async () => {
+          if (token) {
+            isCurrentTokenExpire();
+            await removeFavorite(token, faceId);
+            setFavorites(await getFavorites(token));
+            alert("移除成功");
+          }
+        }}
+        variant="outlined"
+      >
+        移除我心愛的女孩
+      </Button>
+    );
+  };
+
+  const addFavoriteButton = (faceId: string) => () => {
+    return (
+      <Button
+        onClick={async () => {
+          if (token) {
+            isCurrentTokenExpire();
+            await addFavorite(token, faceId);
+            alert("加入成功");
+          }
+        }}
+        variant="outlined"
+      >
+        加入我心愛的女孩
+      </Button>
+    );
+  };
+
+  // 如果token過期就回到主頁面
+  const isCurrentTokenExpire = () => {
+    const currentToken = cookies.get("token");
+    if (currentToken) {
+      const exp = JSON.parse(atob(currentToken.split(".")[1])).exp;
+      if (Math.floor(Date.now() / 1000) > exp) {
+        window.alert("登入過期，請重新登入");
+        cookies.remove("token");
+        window.location.replace(
+          `${window.location.origin}?ID=${cookies.get("actressID")}`
+        );
+      }
+    }
+  };
+
+  const lineCodeHandler = useCallback(async () => {
+    let currentToken = token;
+    if (!currentToken) {
+      const response = await verifyLineCode(
+        Code,
+        `${window.location.origin}?ID=${cookies.get("actressID")}`
+      );
+      setTokenAndCookie(response.token);
+    }
+    setActressID(cookies.get("actressID"));
+    setFavorites(await getFavorites(currentToken));
+  }, [token]);
+
+  const discordCodeHandler = useCallback(async () => {
+    let currentToken = token;
+    if (!currentToken) {
+      const response = await verifyDiscordCode(
+        Code,
+        `${window.location.origin}/?platform=discord`
+      );
+      setTokenAndCookie(response.token);
+    }
+    setActressID(cookies.get("actressID"));
+    setFavorites(await getFavorites(currentToken));
+  }, [token]);
+
+  const telegramCodeHandler = useCallback(async () => {
+    let currentToken = token;
+    if (!currentToken) {
+      const response = await verifyTelegramCode(Code);
+      setTokenAndCookie(response.token);
+    }
+    setActressID(cookies.get("actressID"));
+    setFavorites(await getFavorites(currentToken));
+  }, [token]);
 
   useEffect(() => {
     (async () => {
+      isCurrentTokenExpire();
+
       const liffAccessToken = liff.getAccessToken();
       if (liffAccessToken !== null) {
-        const profile = await verifyProfile(liffAccessToken, prop.LiffId);
-        setProfile(profile);
-        setFavorites(await getFavorites(profile.accountId));
+        const response = await verifyLIFF(liffAccessToken, prop.LiffId);
+        setTokenAndCookie(response.token);
+        setFavorites(await getFavorites(response.token));
+        setActressID(ActressIDInLiff);
+      } else if (Code !== "") {
+        switch (Platform) {
+          case "line":
+            await lineCodeHandler();
+            break;
+          case "discord":
+            await discordCodeHandler();
+            break;
+          case "telegram":
+            await telegramCodeHandler();
+            break;
+          default:
+            await lineCodeHandler();
+        }
+      } else {
+        const id =
+          window.location.search.match(/ID%3D([0-9]+)/)?.[1] ||
+          window.location.search.match(/ID=([0-9]+)/)?.[1] ||
+          cookies.get("actressID");
+        if (!id) {
+          return;
+        }
+        setActressID(id);
+        cookies.set("actressID", id);
       }
     })();
-  }, [prop]);
+  }, [discordCodeHandler, lineCodeHandler, telegramCodeHandler, prop]);
 
   const classes = useStyles();
   return (
-    <div className="App">
-      {profile ? (
-        <>
-          <AppBar
-            position="fixed"
-            style={{ color: "#000000", background: "#ffffff" }}
-          >
-            <Toolbar>
-              <Typography variant="h6" className={classes.title}>
-                {route === "search"
-                  ? "搜尋結果"
-                  : route === "favorites"
-                  ? "我心愛的女孩"
-                  : ""}
-              </Typography>
-              {ID !== "" ? (
-                <Button onClick={() => setSerachRouteByClick()} color="inherit">
-                  搜尋結果
-                </Button>
-              ) : (
-                <></>
-              )}
-              <Button
-                onClick={() => setFavoritesRouteByClick()}
-                color="inherit"
+    <ThemeProvider theme={theme}>
+      <div className="App">
+        <Grid container className={classes.root} spacing={2}>
+          {token ? (
+            <>
+              <AppBar
+                position="fixed"
+                style={{ color: "#000000", background: "#ffffff" }}
               >
-                我心愛的女孩
-              </Button>
-            </Toolbar>
-          </AppBar>
-          <div className={classes.root} style={{ padding: "60px" }}>
-            <div className={classes.card}>
-              <AdCard></AdCard>
-              {route === "search" && profile ? (
-                <>
-                  <StarCard
-                    Profile={profile}
-                    ID={ID}
-                    FavoriteButton={addFavoriteButton(ID)}
-                  ></StarCard>
-                </>
-              ) : route === "favorites" && profile ? (
-                <>
-                  {favorites.map((item) => (
-                    <StarCard
-                      Profile={profile}
-                      Star={
-                        {
-                          id: item.id,
-                          image: item.preview,
-                          name: item.name,
-                          detail: item.detail,
-                        } as star
-                      }
-                      FavoriteButton={removeFavoriteButton(item.id.toString())}
-                    ></StarCard>
-                  ))}
-                </>
-              ) : (
-                <div></div>
-              )}
+                <Toolbar>
+                  <Typography variant="h6" className={classes.title}>
+                    {route === "search"
+                      ? "搜尋結果"
+                      : route === "favorites"
+                      ? "我心愛的女孩"
+                      : ""}
+                  </Typography>
+                  {actressID !== "" ? (
+                    <Button
+                      onClick={() => setSerachRouteByClick()}
+                      color="inherit"
+                    >
+                      搜尋結果
+                    </Button>
+                  ) : (
+                    <></>
+                  )}
+                  <Button
+                    onClick={() => setFavoritesRouteByClick()}
+                    color="inherit"
+                  >
+                    我心愛的女孩
+                  </Button>
+                </Toolbar>
+              </AppBar>
+              <div className={classes.root} style={{ padding: "60px" }}>
+                <div className={classes.card}>
+                  <AdCard></AdCard>
+                  {route === "search" && token ? (
+                    <>
+                      <StarCard
+                        Token={token}
+                        ID={actressID}
+                        FavoriteButton={addFavoriteButton(actressID)}
+                      ></StarCard>
+                    </>
+                  ) : route === "favorites" && token ? (
+                    <>
+                      {favorites.map((item) => (
+                        <StarCard
+                          Token={token}
+                          Star={
+                            {
+                              id: item.id,
+                              image: item.preview,
+                              name: item.name,
+                              detail: item.detail,
+                            } as star
+                          }
+                          FavoriteButton={removeFavoriteButton(
+                            item.id.toString()
+                          )}
+                        ></StarCard>
+                      ))}
+                    </>
+                  ) : (
+                    <div></div>
+                  )}
+                </div>
+              </div>
+            </>
+          ) : actressID ? (
+            <div style={{ padding: "60px" }}>
+              <LoginCard ActressID={actressID}></LoginCard>
             </div>
-          </div>
-        </>
-      ) : (
-        <div>目前僅支持在Line上使用{profile}</div>
-      )}
-    </div>
+          ) : (
+            <div></div>
+          )}
+        </Grid>
+      </div>
+    </ThemeProvider>
   );
 }
 

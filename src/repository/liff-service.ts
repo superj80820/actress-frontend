@@ -1,10 +1,15 @@
 const URL = 'https://api.worldcrater.com/liff-service'
 
-export interface verifyProfileResponse {
-  accountId: string;
-  userId: string;
-  displayName: string;
-  pictureUrl: string;
+
+
+
+export interface verifyCodeResponse{
+    access_token: string;
+    token_type: string;
+    refresh_token: string;
+    expires_in: number,
+    scope:string;
+    id_token: string;
 }
 
 export interface favorite {
@@ -15,32 +20,19 @@ export interface favorite {
   romanization: string;
 }
 
-export async function verifyProfile(accessToken: string, liffid: string): Promise<verifyProfileResponse> {
-  const response = await fetch(`${URL}/profile`, {
-    method: 'POST',
-    body: JSON.stringify({"access_token":accessToken,"liffid":liffid}),
-  })
-  if (!response.ok) {
-    throw new Error(response.statusText)
-  }
-  const responseJSON = await response.json()
-  return {
-    accountId: responseJSON.accountId,
-    userId: responseJSON.userId,
-    displayName: responseJSON.displayName,
-    pictureUrl: responseJSON.pictureUrl,
-  } as verifyProfileResponse
-}
 
-export async function getFavorites(accountId: string): Promise<favorite[]> {
-  const response = await fetch(`${URL}/accounts/${accountId}/favorites`, {
+export async function getFavorites(token: string): Promise<favorite[]> {
+  const response = await fetch(`${URL}/accounts/${token}/favorites`, {
     method: 'GET',
+    headers: {
+      "authorization": token
+    }
   })
   if (!response.ok) {
     throw new Error(response.statusText)
   }
   const responseJSON = await response.json()
-  //yorktodo思考這邊是否可以用Try monad
+
   return responseJSON.favoriteIds.map((item: favorite) => ({
     id : item.id,
     name :item.name,
@@ -50,11 +42,12 @@ export async function getFavorites(accountId: string): Promise<favorite[]> {
   })) as favorite[]
 }
 
-export async function addFavorite(accountId: string, faceId: string): Promise<any> {
+export async function addFavorite(token: string, faceId: string): Promise<any> {
   let headers = new Headers();
   headers.append("Content-Type", "application/json")
+  headers.append("authorization", token)
 
-  const response = await fetch(`${URL}/accounts/${accountId}/favorites`, {
+  const response = await fetch(`${URL}/accounts/${token}/favorites`, {
     method: 'POST',
     headers: headers,
     body: JSON.stringify({
@@ -62,9 +55,7 @@ export async function addFavorite(accountId: string, faceId: string): Promise<an
     }),
   })
   if (!response.ok) {
-    //yorkworkaround
-    console.error(new Error(response.statusText))
-    return
+    return Promise.reject(new Error(response.statusText))
   }
   try {
     const responseJSON= await response.json()
@@ -74,8 +65,11 @@ export async function addFavorite(accountId: string, faceId: string): Promise<an
   }
 }
 
-export async function removeFavorite(accountId: string, faceId: string): Promise<any> {
-  const response = await fetch(`${URL}/accounts/${accountId}/favorites/${faceId}`, {
+export async function removeFavorite(token: string, faceId: string): Promise<any> {
+  const response = await fetch(`${URL}/accounts/${token}/favorites/${faceId}`, {
+    headers: {
+      "authorization": token
+    },
     method: 'DELETE',
   })
   if (!response.ok) {
