@@ -47,7 +47,7 @@ export default function AdCard() {
       </CardActionArea>
       <CardContent>
         <Button
-          href="https://line.me/R/shop/sticker/detail/12619201"
+          href="https://store.line.me/stickershop/product/12619201"
           variant="outlined"
         >
           點選支持
