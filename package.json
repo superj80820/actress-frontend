@@ -1,5 +1,6 @@
 {
   "name": "messfar-frontend",
+  "homepage": "/messfar-frontend",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
