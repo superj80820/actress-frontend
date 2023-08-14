@@ -2,13 +2,15 @@ import React, { useEffect, useState, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import { createMuiTheme } from "@material-ui/core/styles";
+import { red } from "@material-ui/core/colors";
 import Grid from "@material-ui/core/Grid";
 import { ThemeProvider } from "@material-ui/styles";
 import StarCard from "./components/StarCard";
 import AdCard from "./components/AdCard";
+import DonateCard from "./components/DonateCard";
+import Carousel from "./mixs/Carousel";
 import Cookies from "universal-cookie";
 import LoginCard from "./components/LoginCard";
 import "./App.css";
@@ -43,9 +45,6 @@ const useStyles = makeStyles({
   root: {
     display: "flex",
     justifyContent: "center",
-  },
-  title: {
-    flexGrow: 1,
   },
   card: {
     "flex-direction": "column",
@@ -222,15 +221,11 @@ function App(prop: { LiffId: string }) {
                 style={{ color: "#000000", background: "#ffffff" }}
               >
                 <Toolbar>
-                  <Typography variant="h6" className={classes.title}>
-                    {route === "search"
-                      ? "搜尋結果"
-                      : route === "favorites"
-                      ? "我心愛的女孩"
-                      : ""}
-                  </Typography>
                   {actressID !== "" ? (
                     <Button
+                      style={{
+                        color: route === "search" ? red[200] : "#000000",
+                      }}
                       onClick={() => setSerachRouteByClick()}
                       color="inherit"
                     >
@@ -240,6 +235,9 @@ function App(prop: { LiffId: string }) {
                     <></>
                   )}
                   <Button
+                    style={{
+                      color: route === "favorites" ? red[200] : "#000000",
+                    }}
                     onClick={() => setFavoritesRouteByClick()}
                     color="inherit"
                   >
@@ -249,33 +247,66 @@ function App(prop: { LiffId: string }) {
               </AppBar>
               <div className={classes.root} style={{ padding: "60px" }}>
                 <div className={classes.card}>
-                  <AdCard></AdCard>
+                  &nbsp;
+                  {Carousel({
+                    array: [
+                      <AdCard></AdCard>,
+                      <DonateCard
+                        img="https://imgur.com/22UQJUU.png"
+                        bankName="Line Bank"
+                        bankInfo="(824)111012580847"
+                      ></DonateCard>,
+                      <DonateCard
+                        img="https://imgur.com/3ftbKKP.png"
+                        bankName="街口支付"
+                        bankInfo="(396)906114476"
+                      ></DonateCard>,
+                      <DonateCard
+                        img="https://imgur.com/9sVYLSn.png"
+                        bankName="國泰銀行"
+                        bankInfo="(013)204506227890"
+                      ></DonateCard>,
+                    ],
+                    width: "250px",
+                    height: "450px",
+                  })}
                   {route === "search" && token ? (
                     <>
-                      <StarCard
-                        Token={token}
-                        ID={actressID}
-                        FavoriteButton={addFavoriteButton(actressID)}
-                      ></StarCard>
+                      {Carousel({
+                        array: [
+                          <StarCard
+                            Token={token}
+                            ID={actressID}
+                            FavoriteButton={addFavoriteButton(actressID)}
+                          ></StarCard>,
+                        ],
+                        width: "345px",
+                        height: "540px",
+                      })}
                     </>
                   ) : route === "favorites" && token ? (
                     <>
-                      {favorites.map((item) => (
-                        <StarCard
-                          Token={token}
-                          Star={
-                            {
-                              id: item.id,
-                              image: item.preview,
-                              name: item.name,
-                              detail: item.detail,
-                            } as star
-                          }
-                          FavoriteButton={removeFavoriteButton(
-                            item.id.toString()
-                          )}
-                        ></StarCard>
-                      ))}
+                      {Carousel({
+                        array: favorites.map((item) => (
+                          <StarCard
+                            Token={token}
+                            Star={
+                              {
+                                id: item.id,
+                                image: item.preview,
+                                name: item.name,
+                                detail: item.detail,
+                              } as star
+                            }
+                            FavoriteButton={removeFavoriteButton(
+                              item.id.toString()
+                            )}
+                            maxWidth={270}
+                          ></StarCard>
+                        )),
+                        width: "270px",
+                        height: "540px",
+                      })}
                     </>
                   ) : (
                     <div></div>
