@@ -4,6 +4,11 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+## Prepare
+
+1. `docker compose up`
+2. `docker compose exec react-app bash`
+
 ### `yarn start`
 
 Runs the app in the development mode.<br />

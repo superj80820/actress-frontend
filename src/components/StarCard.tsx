@@ -41,16 +41,19 @@ const clickToSearchByStarName = (name: string) => () =>
 export default function StarCard(prop: {
   Token: string;
   FavoriteButton: any;
+  maxWidth?: number;
   ID: string;
 }): any;
 export default function StarCard(prop: {
   Token: string;
   FavoriteButton: any;
+  maxWidth?: number;
   Star: star;
 }): any;
 export default function StarCard(prop: {
   Token: string;
   FavoriteButton: any;
+  maxWidth?: number;
   ID?: string;
   Star?: star;
 }) {
@@ -58,6 +61,10 @@ export default function StarCard(prop: {
   const copyNameRef = useRef<HTMLDivElement>(null);
   const [name, setName] = useState("");
   const [preview, setPreview] = useState("");
+  let maxWidth = 345;
+  if (prop.maxWidth) {
+    maxWidth = prop.maxWidth;
+  }
 
   const copyToClipboard = () => {
     const textarea = document.createElement("textarea");
@@ -90,7 +97,10 @@ export default function StarCard(prop: {
   }, [prop]);
 
   return (
-    <Card className={classes.root} style={{ width: "100vw" }}>
+    <Card
+      className={classes.root}
+      style={{ maxWidth: maxWidth, width: "100vw" }}
+    >
       <div ref={copyNameRef}>
         <CardHeader
           avatar={
