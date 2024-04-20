@@ -5,7 +5,6 @@ import "@egjs/react-flicking/dist/flicking.css";
 
 export default function Carousel(prop: {
   array: Array<any>;
-  width: string;
   height: string;
 }) {
   const [currentIdx, setCurrentIdex] = useState(0);
@@ -13,7 +12,6 @@ export default function Carousel(prop: {
   return (
     <Flicking
       align="center"
-      circular
       adaptive
       useFractionalSize
       resizeOnContentsReady
@@ -32,7 +30,6 @@ export default function Carousel(prop: {
           className={cx("carousel-panel", idx === currentIdx && "active")}
           key={idx}
           style={{
-            width: prop.width,
             height: prop.height,
           }}
         >

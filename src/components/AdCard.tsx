@@ -27,7 +27,7 @@ export default function AdCard() {
       <CardActionArea>
         <CardMedia
           className={classes.media}
-          image="https://imgur.com/kkkTVKR.png"
+          image={process.env.PUBLIC_URL + "/images/line_sticker.jpg"}
           title="Contemplative Reptile"
         />
         <CardContent>
@@ -48,6 +48,7 @@ export default function AdCard() {
       <CardContent>
         <Button
           href="https://store.line.me/stickershop/product/12619201"
+          fullWidth={true}
           variant="outlined"
         >
           點選支持
