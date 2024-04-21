@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
@@ -18,7 +18,7 @@ const useStyles = makeStyles({
     marginTop: "30",
   },
   cardMedia: {
-    width: "150px",
+    width: "175px",
     height: "100%",
     margin: "auto",
   },
@@ -71,6 +71,7 @@ export default function DonateCard(prop: {
       <CardContent>
         <Button
           onClick={() => copyToClipboard(prop.bankInfo)}
+          fullWidth={true}
           variant="outlined"
         >
           複製帳戶

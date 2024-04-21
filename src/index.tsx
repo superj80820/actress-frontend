@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .then(() => {
       ReactDOM.render(
         <React.StrictMode>
-          <App LiffId={LIFF_ID} />
+          <App />
         </React.StrictMode>,
         document.getElementById("root")
       );

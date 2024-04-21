@@ -33,13 +33,15 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
 }
 
 .carousel-panel {
-  max-width: 344px; /* 320 .. 344 */
+  max-width: 344px;
+  /* 320 .. 344 */
   padding: 0 0px;
 }
 
@@ -59,4 +61,45 @@
   /* width: 100%; yorktodo */
   /* height: 300px; yorktodo */
   transition: transform 0.25s;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: auto;
+  padding: 10px;
+}
+
+.grid-item {
+  display: grid;
+  place-items: center;
+  /* border: 1px solid rgba(0, 0, 0, 0.8); */
+  padding: 20px;
+  font-size: 30px;
+  text-align: center;
+}
+
+.grid-button-container {
+  display: grid;
+  grid-template-columns: auto;
+}
+
+.grid-button-item {
+  display: grid;
+  place-items: center;
+  padding: 3px;
+  font-size: 30px;
+  text-align: center;
+}
+
+.scroll-container {
+  width: 100%;
+  /* 调整为视窗宽度 */
+  overflow-x: auto;
+  /* 允许水平滚动 */
+  display: flex;
+  /* 使用弹性布局 */
+  flex-direction: row;
+  /* 子元素水平排列 */
+  white-space: nowrap;
+  /* 防止元素折行 */
 }

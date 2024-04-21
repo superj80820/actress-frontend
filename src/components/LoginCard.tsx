@@ -6,9 +6,6 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Icon from "@material-ui/core/Icon";
-import TelegramLoginButton, {
-  TelegramUser,
-} from "@v9v/ts-react-telegram-login";
 import Typography from "@material-ui/core/Typography";
 
 const useStyles = makeStyles((theme) => ({
@@ -24,23 +21,32 @@ const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
     borderRadius: "5em",
+    width: "19em"
   },
+  buttonGridContainer: {
+    display: "grid",
+    gridTemplateColumns: "auto",
+  },
+  buttonGridItem: {
+    display: "grid",
+    placeItems: "center",
+  }
 }));
 
-export default function LoginCard(prop: { ActressID: string }) {
+export default function LoginCard(prop: { ActressID: string | null }) {
   const classes = useStyles();
 
   const lineIcon = (
     <Icon>
       <img
-        alt="edit"
+        src={process.env.PUBLIC_URL + '/images/line_icon.png'}
+        alt="line icon"
         style={{
           width: "140%",
           position: "relative",
           bottom: "5px",
           right: "5px",
         }}
-        src="line_icon.png"
       />
     </Icon>
   );
@@ -48,29 +54,50 @@ export default function LoginCard(prop: { ActressID: string }) {
   const discordIcon = (
     <Icon>
       <img
-        alt="edit"
+        src={process.env.PUBLIC_URL + "/images/discord_icon.svg"}
+        alt="discord icon"
         style={{
           width: "140%",
           position: "relative",
           bottom: "5px",
           right: "5px",
         }}
-        src="discord_icon.svg"
       />
     </Icon>
   );
 
-  const lineLogin = (actressID: string) =>
+  const telegramIcon = (
+    <Icon>
+      <img
+        src={process.env.PUBLIC_URL + "/images/telegram_icon.png"}
+        alt="telegram icon"
+        style={{
+          width: "95%",
+          position: "relative",
+          bottom: "6px",
+        }}
+      />
+    </Icon>
+  );
+
+  const lineLogin = (actressID: string | null) => {
+    let redirectArgs = ["line"]
+
+    if (actressID) {
+      redirectArgs.push(actressID)
+    }
+
     window.location.replace(
       "https://access.line.me/oauth2/v2.1/authorize?" +
-        "response_type=code" +
-        "&client_id=1655529572" +
-        `&redirect_uri=${
-          window.location.origin
-        }?ID=${actressID}&state=${new Date().getTime()}&scope=profile%20openid&nonce=${new Date().getTime()}`
+      "response_type=code" +
+      "&client_id=1655529572" +
+      `&redirect_uri=${window.location.origin}?` +
+      `linePlatformArgs=${redirectArgs.join(",")}` +
+      `&state=${new Date().getTime()}&scope=profile%20openid&nonce=${new Date().getTime()}`
     );
+  }
 
-  const telegramLogin = (user: TelegramUser) => {
+  const telegramLogin = (user: any) => {
     window.location.replace(
       `${window.location.origin}?platform=telegram&code=${btoa(
         JSON.stringify(user)
@@ -78,7 +105,7 @@ export default function LoginCard(prop: { ActressID: string }) {
     );
   };
 
-  const discordLogin = (actressID: string) =>
+  const discordLogin = () =>
     window.location.replace(
       "https://discord.com/api/oauth2/authorize?client_id=939965475629178911&redirect_uri=https%3A%2F%2Fmessfar.com%2F%3Fplatform%3Ddiscord&response_type=code&scope=identify%20email"
     );
@@ -88,7 +115,7 @@ export default function LoginCard(prop: { ActressID: string }) {
       <CardActionArea>
         <CardMedia
           className={classes.media}
-          image="messfar_icon.jpg"
+          image={process.env.PUBLIC_URL + "/images/messfar_icon.jpg"}
           title="Contemplative Reptile"
         />
         <CardContent>
@@ -98,42 +125,59 @@ export default function LoginCard(prop: { ActressID: string }) {
         </CardContent>
       </CardActionArea>
       <CardContent>
-        <Button
-          className={classes.button}
-          style={{
-            backgroundColor: "#02C755",
-            color: "#ffffff",
-            padding: "8px ​25p",
-          }}
-          size="large"
-          variant="contained"
-          disableElevation={true}
-          startIcon={lineIcon}
-          onClick={() => lineLogin(prop.ActressID)}
-        >
-          　　Line　　
-        </Button>
-        <Button
-          className={classes.button}
-          style={{
-            backgroundColor: "#8B9DFF",
-            color: "#ffffff",
-            padding: "8px ​25p",
-          }}
-          size="large"
-          variant="contained"
-          disableElevation={true}
-          startIcon={discordIcon}
-          onClick={() => discordLogin(prop.ActressID)}
-        >
-          　Discord　
-        </Button>
-        <div style={{ padding: "4px" }}></div>
-        <TelegramLoginButton
-          usePic={false}
-          dataOnAuth={telegramLogin}
-          botName="MessfarBot"
-        />
+        <div className={classes.buttonGridContainer}>
+          <div className={classes.buttonGridItem}>
+            <Button
+              className={classes.button}
+              style={{
+                backgroundColor: "#02C755",
+                color: "#ffffff",
+                padding: "8px ​25p",
+              }}
+              size="large"
+              variant="contained"
+              disableElevation={true}
+              startIcon={lineIcon}
+              onClick={() => lineLogin(prop.ActressID)}
+            >
+              Line
+            </Button>
+          </div>
+          <div className={classes.buttonGridItem}>
+            <Button
+              className={classes.button}
+              style={{
+                backgroundColor: "#8B9DFF",
+                color: "#ffffff",
+                padding: "8px ​25p",
+              }}
+              size="large"
+              variant="contained"
+              disableElevation={true}
+              startIcon={discordIcon}
+              onClick={() => discordLogin()}
+            >
+              Discord
+            </Button>
+          </div>
+          <div className={classes.buttonGridItem}>
+            <Button
+              className={classes.button}
+              style={{
+                backgroundColor: "#32A9DF",
+                color: "#ffffff",
+                padding: "8px ​25p",
+              }}
+              size="large"
+              variant="contained"
+              disableElevation={true}
+              startIcon={telegramIcon}
+              onClick={() => telegramLogin(prop.ActressID)}
+            >
+              Telegram
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );

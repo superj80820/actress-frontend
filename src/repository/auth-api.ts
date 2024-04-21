@@ -1,0 +1,84 @@
+const AUTH_SERVICE_URL = 'https://api.worldcrater.com/auth-service'
+
+
+export interface verifyCodeResponse {
+  token: string;
+}
+
+export async function verifyLIFF(accessToken: string, liffid: string): Promise<verifyCodeResponse> {
+  const response = await fetch(`${AUTH_SERVICE_URL}/verifyLIFF`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ "accessToken": accessToken, "liffid": liffid }),
+  })
+  if (!response.ok) {
+    throw new Error(response.statusText)
+  }
+  const responseJSON = await response.json()
+
+  return {
+    token: responseJSON.token
+  }
+}
+
+export async function verifyLineCode(code: string): Promise<verifyCodeResponse> {
+  return {
+    token: "TODO token"
+  }
+  // const response = await fetch(`${AUTH_SERVICE_URL}/verifyLineCode`, {
+  //   method: 'POST',
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify({"code":code,"redirectURI":redirectURI}),
+  // })
+  // if (!response.ok) {
+  //   throw new Error(response.statusText)
+  // }
+  // const responseJSON = await response.json()
+
+  // return {
+  //   token: responseJSON.token
+  // } as verifyTokenResponse
+}
+
+export async function verifyDiscordCode(code: string): Promise<verifyCodeResponse> {
+  return {
+    token: "TODO token"
+  }
+  // const response = await fetch(`${AUTH_SERVICE_URL}/verifyDiscordCode`, {
+  //   method: 'POST',
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify({ "code": code, "redirectURI": redirectURI }),
+  // })
+  // if (!response.ok) {
+  //   throw new Error(response.statusText)
+  // }
+  // const responseJSON = await response.json()
+
+  // return {
+  //   token: responseJSON.token
+  // } as verifyTokenResponse
+}
+
+export async function verifyTelegramCode(code: string): Promise<verifyCodeResponse> {
+  const response = await fetch(`${AUTH_SERVICE_URL}/verifyTelegramCode`, {
+    method: 'POST',
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ "code": code }),
+  })
+  if (!response.ok) {
+    throw new Error(response.statusText)
+  }
+  const responseJSON = await response.json()
+
+  return {
+    token: responseJSON.token
+  }
+}
