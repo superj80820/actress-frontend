@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect, ReactNode } from 'react'
 import Scroll from "../components/Scroll";
-import StarCard from "../components/StarCard";
+import ActressCard from "../components/ActressCard";
 import Bar from "../components/Bar";
 import { addFavorite } from '../repository/actress-api'
-import { getInfoByID, actress } from '../repository/actress-api'
+import { getActressByID, actress } from '../repository/actress-api'
 import Button from "@material-ui/core/Button";
 import AdCard from "../components/AdCard";
 import DonateCard from "../components/DonateCard";
@@ -21,7 +21,7 @@ export default function SearchPage() {
 
   useEffect(() => {
     (async () => {
-      const actressInformation = await getInfoByID(actressID)
+      const actressInformation = await getActressByID(actressID)
       setActress(actressInformation)
     })()
   }, [])
@@ -57,7 +57,7 @@ export default function SearchPage() {
         <Scroll>
           {
             actress ? [
-              <StarCard
+              <ActressCard
                 actressID={actressID}
                 name={actress.name}
                 image={actress.image}

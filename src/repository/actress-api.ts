@@ -5,23 +5,13 @@ export interface actress {
   detail: string;
 }
 
-
-export interface verifyCodeResponse {
-  access_token: string;
-  token_type: string;
-  refresh_token: string;
-  expires_in: number,
-  scope: string;
-  id_token: string;
-}
-
-export async function getInfoByID(ID: string): Promise<actress> {
+export async function getActressByID(ID: string): Promise<actress> {
   return {
     id: "3",
     image: "https://cdn2.ettoday.net/images/6269/d6269133.jpg",
     name: "TOTOTODOyork",
     detail: "TODOyork",
-  } as actress
+  }
   // const response = await fetch(`${URL}/faces/face/${ID}`)
   // if (!response.ok) {
   //   throw new Error(response.statusText)

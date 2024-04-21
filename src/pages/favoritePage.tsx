@@ -4,7 +4,7 @@ import Carousel from "../components/Carousel";
 import Scroll from "../components/Scroll";
 import AdCard from "../components/AdCard";
 import Button from "@material-ui/core/Button";
-import StarCard from "../components/StarCard";
+import ActressCard from "../components/ActressCard";
 import DonateCard from "../components/DonateCard";
 import { removeFavorite, getFavorites, actress } from '../repository/actress-api'
 
@@ -47,7 +47,7 @@ export default function FavoritePage() {
       <div className="grid-item">
         <Scroll>
           {
-            favorites.map((item) => (<StarCard
+            favorites.map((item) => (<ActressCard
               actressID={item.id}
               name={item.name}
               image={item.image}

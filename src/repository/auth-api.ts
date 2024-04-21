@@ -1,11 +1,11 @@
 const AUTH_SERVICE_URL = 'https://api.worldcrater.com/auth-service'
 
 
-export interface verifyTokenResponse {
+export interface verifyCodeResponse {
   token: string;
 }
 
-export async function verifyLIFF(accessToken: string, liffid: string): Promise<verifyTokenResponse> {
+export async function verifyLIFF(accessToken: string, liffid: string): Promise<verifyCodeResponse> {
   const response = await fetch(`${AUTH_SERVICE_URL}/verifyLIFF`, {
     method: 'POST',
     headers: {
@@ -20,10 +20,10 @@ export async function verifyLIFF(accessToken: string, liffid: string): Promise<v
 
   return {
     token: responseJSON.token
-  } as verifyTokenResponse
+  }
 }
 
-export async function verifyLineCode(code: string): Promise<verifyTokenResponse> {
+export async function verifyLineCode(code: string): Promise<verifyCodeResponse> {
   return {
     token: "TODO token"
   }
@@ -44,7 +44,7 @@ export async function verifyLineCode(code: string): Promise<verifyTokenResponse>
   // } as verifyTokenResponse
 }
 
-export async function verifyDiscordCode(code: string): Promise<verifyTokenResponse> {
+export async function verifyDiscordCode(code: string): Promise<verifyCodeResponse> {
   return {
     token: "TODO token"
   }
@@ -65,7 +65,7 @@ export async function verifyDiscordCode(code: string): Promise<verifyTokenRespon
   // } as verifyTokenResponse
 }
 
-export async function verifyTelegramCode(code: string): Promise<verifyTokenResponse> {
+export async function verifyTelegramCode(code: string): Promise<verifyCodeResponse> {
   const response = await fetch(`${AUTH_SERVICE_URL}/verifyTelegramCode`, {
     method: 'POST',
     headers: {
@@ -80,5 +80,5 @@ export async function verifyTelegramCode(code: string): Promise<verifyTokenRespo
 
   return {
     token: responseJSON.token
-  } as verifyTokenResponse
+  }
 }

@@ -7,7 +7,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Avatar from "@material-ui/core/Avatar";
 import { red } from "@material-ui/core/colors";
-import { getInfoByID, actress } from "../repository/actress-api";
+import { getActressByID, actress } from "../repository/actress-api";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 const clickToSearchByStarName = (name: string) => () =>
   window.open(`https://google.com/search?q=${name}`);
 
-export default function StarCard(prop: {
+export default function ActressCard(prop: {
   actressID: string;
   name: string;
   image: string;
