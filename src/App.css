@@ -39,30 +39,6 @@
   }
 }
 
-.carousel-panel {
-  max-width: 344px;
-  /* 320 .. 344 */
-  padding: 0 0px;
-}
-
-.carousel-panel.active {
-  padding: 0 0px;
-  transition: padding 0.45s;
-}
-
-.carousel-panel.active div {
-  transition: transform 0.25s, margin 0.25s;
-  transform: scale(1);
-}
-
-.carousel-panel div {
-  transform: scale(0.9);
-  margin: 0 auto;
-  /* width: 100%; yorktodo */
-  /* height: 300px; yorktodo */
-  transition: transform 0.25s;
-}
-
 .grid-container {
   display: grid;
   grid-template-columns: auto;

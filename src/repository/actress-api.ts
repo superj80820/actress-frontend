@@ -1,121 +1,117 @@
-export interface actress {
-  id: string;
-  image: string;
-  name: string;
-  detail: string;
-}
+import { actress, actressAPIRepo } from "../domain/actress"
+import { ErrorExpired, ErrorAlreadyDone } from "../domain/error"
 
-export async function getActressByID(ID: string): Promise<actress> {
+const createActressAPIRepo = (): actressAPIRepo => {
+  const baseURL = process.env.REACT_APP_API_URL
+
   return {
-    id: "3",
-    image: "https://cdn2.ettoday.net/images/6269/d6269133.jpg",
-    name: "TOTOTODOyork",
-    detail: "TODOyork",
-  }
-  // const response = await fetch(`${URL}/faces/face/${ID}`)
-  // if (!response.ok) {
-  //   throw new Error(response.statusText)
-  // }
+    getActressByID: async (actressID: string): Promise<actress> => {
+      const response = await fetch(`${baseURL}/api/actress/${actressID}`)
+      if (response.status === 401) {
+        const responseJSON = await response.json()
+        if (responseJSON["code"] === 3) {
+          throw new ErrorExpired(responseJSON["message"])
+        }
+        throw new Error("unknown unauthorized status")
+      } else if (response.status !== 200) {
+        throw new Error(`fetch failed. status ${response.status}, body: ${await response.text()}`)
+      }
 
-  // const responseJSON = (await response.json())[0]
-  // return {
-  //   id: parseInt(ID),
-  //   image: responseJSON.preview,
-  //   name: responseJSON.name,
-  //   detail: responseJSON.detail,
-  // } as star
-}
+      const responseJSON = await response.json()
 
-export async function getFavorites(): Promise<actress[]> {
-  return [
-    {
-      id: "3",
-      name: "YOTODOYOrk",
-      image: "https://cdn2.ettoday.net/images/6269/d6269133.jpg",
-      detail: "string",
+      return {
+        id: responseJSON["id"],
+        image: responseJSON["preview"],
+        name: responseJSON["name"],
+        detail: responseJSON["detail"],
+      }
     },
-    {
-      id: "33",
-      name: "YOTODOYOrk",
-      image: "https://cdn2.ettoday.net/images/6269/d6269133.jpg",
-      detail: "string",
+    getFavorites: async (token: string): Promise<actress[]> => {
+      const headers = new Headers()
+      headers.append("Content-Type", "application/json")
+      headers.append("Authorization", `Bearer ${token}`)
+      const response = await fetch(`${baseURL}/api/user/favorites`, {
+        headers: headers,
+        method: 'GET',
+      })
+      if (response.status === 401) {
+        const responseJSON = await response.json()
+        if (responseJSON["code"] === 3) {
+          throw new ErrorExpired(responseJSON["message"])
+        }
+        throw new Error("unknown unauthorized status")
+      } else if (response.status !== 200) {
+        throw new Error(`fetch failed. status ${response.status}, body: ${await response.text()}`)
+      }
+
+      const responseJSON = await response.json()
+
+      if (!Array.isArray(responseJSON)) {
+        throw new TypeError("provided input is not an array.");
+      }
+
+      const actresses: actress[] = []
+
+      for (const item of responseJSON) {
+        if ((typeof item.id === 'string' &&
+          typeof item.preview === 'string' &&
+          typeof item.name === 'string' &&
+          typeof item.detail === 'string')) {
+          actresses.push({
+            id: item.id,
+            image: item.preview,
+            name: item.name,
+            detail: item.detail,
+          })
+        } else {
+          throw new TypeError("not all elements are actress")
+        }
+      }
+
+      return actresses
     },
-    {
-      id: "333",
-      name: "YOTODOYOrk",
-      image: "https://cdn2.ettoday.net/images/6269/d6269133.jpg",
-      detail: "string",
+    addFavorite: async (actressID: string, token: string): Promise<void> => {
+      const headers = new Headers()
+      headers.append("Content-Type", "application/json")
+      headers.append("Authorization", `Bearer ${token}`)
+      const response = await fetch(`${baseURL}/api/user/favorites`, {
+        headers: headers,
+        method: 'POST',
+        body: JSON.stringify({
+          "actress_id": actressID,
+        }),
+      })
+      if (response.status === 401) {
+        const responseJSON = await response.json()
+        if (responseJSON["code"] === 3) {
+          throw new ErrorExpired(responseJSON["message"])
+        }
+        throw new Error("unknown unauthorized status")
+      } else if (response.status === 409) {
+        throw new ErrorAlreadyDone("already insert favorite error")
+      } else if (response.status !== 200) {
+        throw new Error(`fetch failed. status ${response.status}, body: ${await response.text()}`)
+      }
     },
-    {
-      id: "3333",
-      name: "YOTODOYOrk",
-      image: "https://cdn2.ettoday.net/images/6269/d6269133.jpg",
-      detail: "string",
-    },
-    {
-      id: "33333",
-      name: "YOTODOYOrk",
-      image: "https://cdn2.ettoday.net/images/6269/d6269133.jpg",
-      detail: "string",
+    removeFavorite: async (actressID: string, token: string): Promise<void> => {
+      const headers = new Headers()
+      headers.append("Content-Type", "application/json")
+      headers.append("Authorization", `Bearer ${token}`)
+      const response = await fetch(`${baseURL}/api/user/favorites/${actressID}`, {
+        headers: headers,
+        method: 'DELETE',
+      })
+      if (response.status === 401) {
+        const responseJSON = await response.json()
+        if (responseJSON["code"] === 3) {
+          throw new ErrorExpired(responseJSON["message"])
+        }
+        throw new Error("unknown unauthorized status")
+      } else if (response.status !== 200) {
+        throw new Error(`fetch failed. status ${response.status}, body: ${await response.text()}`)
+      }
     }
-  ]
-  // const response = await fetch(`${URL}/accounts/${token}/favorites`, {
-  //   method: 'GET',
-  //   headers: {
-  //     "authorization": token
-  //   }
-  // })
-  // if (!response.ok) {
-  //   throw new Error(response.statusText)
-  // }
-  // const responseJSON = await response.json()
-
-  // return responseJSON.favoriteIds.map((item: favorite) => ({
-  //   id: item.id,
-  //   name: item.name,
-  //   preview: item.preview,
-  //   detail: item.detail,
-  //   romanization: item.romanization,
-  // })) as favorite[]
+  }
 }
 
-export async function addFavorite(actressID: string): Promise<any> {
-  // let headers = new Headers();
-  // headers.append("Content-Type", "application/json")
-  // headers.append("authorization", token)
-
-  // const response = await fetch(`${URL}/accounts/${token}/favorites`, {
-  //   method: 'POST',
-  //   headers: headers,
-  //   body: JSON.stringify({
-  //     "faceId": parseInt(faceId),
-  //   }),
-  // })
-  // if (!response.ok) {
-  //   return Promise.reject(new Error(response.statusText))
-  // }
-  // try {
-  //   const responseJSON = await response.json()
-  //   return Promise.resolve(responseJSON)
-  // } catch (err) {
-  //   return Promise.reject(err)
-  // }
-}
-
-export async function removeFavorite(actressID: string): Promise<any> {
-  // const response = await fetch(`${URL}/accounts/${token}/favorites/${faceId}`, {
-  //   headers: {
-  //     "authorization": token
-  //   },
-  //   method: 'DELETE',
-  // })
-  // if (!response.ok) {
-  //   throw new Error(response.statusText)
-  // }
-  // try {
-  //   const responseText = await response.text()
-  //   return Promise.resolve(responseText)
-  // } catch (err) {
-  //   return Promise.reject(err)
-  // }
-}
+export default createActressAPIRepo

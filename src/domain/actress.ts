@@ -1,0 +1,14 @@
+export interface actress {
+  id: string;
+  image: string;
+  name: string;
+  detail: string;
+}
+
+
+export interface actressAPIRepo {
+  getActressByID(actressID: string): Promise<actress>
+  getFavorites(token: string): Promise<actress[]>
+  addFavorite(actressID: string, token: string): Promise<void>
+  removeFavorite(actressID: string, token: string): Promise<void>
+}

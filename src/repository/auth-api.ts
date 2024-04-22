@@ -1,82 +1,80 @@
-const AUTH_SERVICE_URL = 'http://localhost:9090/api'
+import { authAPIRepo } from "../domain/auth"
+import { verifyCodeAPIResponse } from "../domain/auth"
 
-export interface verifyCodeAPIResponse {
-  accessToken: string;
-}
+const createAuthAPIRepo = (): authAPIRepo => {
+  const baseURL = process.env.REACT_APP_API_URL
 
-export async function verifyLIFF(accessToken: string, liffid: string): Promise<verifyCodeAPIResponse> {
-  const response = await fetch(`${AUTH_SERVICE_URL}/verifyLIFF`, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json",
+  return {
+    // verifyLIFF: async (accessToken: string, liffid: string): Promise<verifyCodeAPIResponse> => {
+    //   const response = await fetch(`${baseURL}/verifyLIFF`, {
+    //     method: 'POST',
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: JSON.stringify({ "accessToken": accessToken, "liffid": liffid }),
+    //   })
+    //   if (!response.ok) {
+    //     throw new Error(response.statusText)
+    //   }
+    //   const responseJSON = await response.json()
+
+    //   return {
+    //     accessToken: responseJSON["access_token"]
+    //   }
+    // },
+    verifyLineCode: async (code: string, redirectURI: string): Promise<verifyCodeAPIResponse> => {
+      const response = await fetch(`${baseURL}/api/verifyLineCode`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ "code": code, "redirect_uri": redirectURI }),
+      })
+      if (!response.ok) {
+        throw new Error(response.statusText)
+      }
+
+      const responseJSON = await response.json()
+
+      return {
+        accessToken: responseJSON["access_token"]
+      }
     },
-    body: JSON.stringify({ "accessToken": accessToken, "liffid": liffid }),
-  })
-  if (!response.ok) {
-    throw new Error(response.statusText)
-  }
-  const responseJSON = await response.json()
+    verifyDiscordCode: async (code: string): Promise<verifyCodeAPIResponse> => {
+      const response = await fetch(`${baseURL}/verifyDiscordCode`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ "code": code }),
+      })
+      if (!response.ok) {
+        throw new Error(response.statusText)
+      }
+      const responseJSON = await response.json()
 
-  return {
-    accessToken: responseJSON["access_token"]
-  }
-}
-
-export async function verifyLineCode(code: string, redirectURI: string): Promise<verifyCodeAPIResponse> {
-  const response = await fetch(`${AUTH_SERVICE_URL}/verifyLineCode`, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json",
+      return {
+        accessToken: responseJSON["access_token"]
+      }
     },
-    body: JSON.stringify({ "code": code, "redirect_uri": redirectURI }),
-  })
-  if (!response.ok) {
-    throw new Error(response.statusText)
-  }
-  const responseJSON = await response.json()
+    verifyTelegramCode: async (code: string): Promise<verifyCodeAPIResponse> => {
+      const response = await fetch(`${baseURL}/verifyTelegramCode`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ "code": code }),
+      })
+      if (!response.ok) {
+        throw new Error(response.statusText)
+      }
+      const responseJSON = await response.json()
 
-  console.log("yorkghujadf", responseJSON)
-
-  return {
-    accessToken: responseJSON["access_token"]
-  }
-}
-
-export async function verifyDiscordCode(code: string): Promise<verifyCodeAPIResponse> {
-  return {
-    accessToken: "TODO token"
-  }
-  // const response = await fetch(`${AUTH_SERVICE_URL}/verifyDiscordCode`, {
-  //   method: 'POST',
-  //   headers: {
-  //     "Content-Type": "application/json",
-  //   },
-  //   body: JSON.stringify({ "code": code, "redirectURI": redirectURI }),
-  // })
-  // if (!response.ok) {
-  //   throw new Error(response.statusText)
-  // }
-  // const responseJSON = await response.json()
-
-  // return {
-  //   token: responseJSON.token
-  // } as verifyTokenResponse
-}
-
-export async function verifyTelegramCode(code: string): Promise<verifyCodeAPIResponse> {
-  const response = await fetch(`${AUTH_SERVICE_URL}/verifyTelegramCode`, {
-    method: 'POST',
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ "code": code }),
-  })
-  if (!response.ok) {
-    throw new Error(response.statusText)
-  }
-  const responseJSON = await response.json()
-
-  return {
-    accessToken: responseJSON["access_token"]
+      return {
+        accessToken: responseJSON["access_token"]
+      }
+    }
   }
 }
+
+export default createAuthAPIRepo

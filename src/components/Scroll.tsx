@@ -26,8 +26,8 @@ const ScrollContainer = (props: { children: ReactNode[] }) => {
 
   return (
     <div className="scroll-container" ref={scrollContainerRef} style={{ justifyContent: justifyContent }}>
-      {props.children.map(item => (
-        <div>
+      {props.children.map((item, index) => (
+        <div key={index}>
           {item}
         </div>
       ))}
