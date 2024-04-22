@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect, ReactNode } from "react";
-import { makeStyles, Theme, createStyles } from "@material-ui/core/styles";
+import React, { useRef, ReactNode } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
 import CardMedia from "@material-ui/core/CardMedia";
@@ -7,9 +7,8 @@ import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Avatar from "@material-ui/core/Avatar";
 import { red } from "@material-ui/core/colors";
-import { getActressByID, actress } from "../repository/actress-api";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((_) => ({
   root: {
     maxWidth: 330,
     width: 330,

@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, ReactNode } from 'react'
+import React, { useState, useEffect } from 'react'
 import Scroll from "../components/Scroll";
 import ActressCard from "../components/ActressCard";
 import Bar from "../components/Bar";
@@ -9,22 +9,22 @@ import AdCard from "../components/AdCard";
 import DonateCard from "../components/DonateCard";
 import { useSearchParams } from 'react-router-dom';
 
-
-
 export default function SearchPage() {
   const [searchParams] = useSearchParams()
   const [actress, setActress] = useState<actress>()
-  const actressID = searchParams.get("actressID")
-  if (!actressID) {
-    return (<></>)
-  }
+  const [actressID, setActressID] = useState('');
 
   useEffect(() => {
-    (async () => {
+    const actressID = searchParams.get("actressID")
+    if (!actressID) {
+      return
+    }
+    setActressID(actressID);
+    (async (actressID: string) => {
       const actressInformation = await getActressByID(actressID)
       setActress(actressInformation)
-    })()
-  }, [])
+    })(actressID)
+  }, [searchParams])
 
   return (
     <div className="grid-container">

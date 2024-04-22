@@ -93,7 +93,7 @@ export default function LoginCard(prop: { ActressID: string | null }) {
       "&client_id=1655529572" +
       `&redirect_uri=${window.location.origin}?` +
       `linePlatformArgs=${redirectArgs.join(",")}` +
-      `&state=${new Date().getTime()}&scope=profile%20openid&nonce=${new Date().getTime()}`
+      `&state=${new Date().getTime()}&scope=profile%20openid%20email&nonce=${new Date().getTime()}`
     );
   }
 

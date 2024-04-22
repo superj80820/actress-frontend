@@ -1,12 +1,4 @@
 import React, { useRef, useState, useEffect, ReactNode } from 'react'
-import Carousel from "../components/Carousel";
-import ActressCard from "./ActressCard";
-import Bar from "../components/Bar";
-import { addFavorite } from '../repository/actress-api'
-import Button from "@material-ui/core/Button";
-import AdCard from "../components/AdCard";
-import DonateCard from "../components/DonateCard";
-import { useSearchParams } from 'react-router-dom';
 
 const ScrollContainer = (props: { children: ReactNode[] }) => {
   const scrollContainerRef = useRef(null);

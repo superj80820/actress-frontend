@@ -1,38 +1,52 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
-import useToken from '../repository/auth-storage'
-import { verifyLineCode, verifyDiscordCode, verifyTelegramCode } from '../repository/auth-api'
+import useToken from '../repository/auth-storage';
+import { verifyLineCode, verifyDiscordCode, verifyTelegramCode, verifyCodeAPIResponse } from '../repository/auth-api';
 
 export default function HomePage() {
   const navigate = useNavigate()
   const { token, setTokenWithCookie } = useToken()
 
-
   useEffect(() => {
-    const fetchToken = async (code: string, platform: string) => {
-      const verifyLineCodeResponse = await {
-        "line": verifyLineCode(code),
-        "discord": verifyDiscordCode(code),
-        "telegram": verifyTelegramCode(code),
-      }[platform]
-      if (!verifyLineCodeResponse) {
-        return
+    const fetchToken = async (code: string, platform: string, redirectURI: string) => {
+      let verifyCodeResponse: verifyCodeAPIResponse
+      switch (platform) {
+        case "line":
+          verifyCodeResponse = await verifyLineCode(code, redirectURI)
+          break
+        case "discord":
+          verifyCodeResponse = await verifyDiscordCode(code)
+          break
+        case "telegram":
+          verifyCodeResponse = await verifyTelegramCode(code)
+          break
+        default:
+          return
       }
-      setTokenWithCookie(verifyLineCodeResponse.token)
+      setTokenWithCookie(verifyCodeResponse.accessToken)
     }
 
     const query = new URLSearchParams(window.location.search)
     const code = query.get("code")
     let platform = query.get("platform")
     let actressID = query.get("actressID")
-    const linePlatformArgs = query.get("linePlatformArgs")
-    if (linePlatformArgs) {
-      [platform, actressID] = linePlatformArgs.split(",")
+    const linePlatformArgsString = query.get("linePlatformArgs")
+    if (linePlatformArgsString) {
+      const linePlatformArgs = linePlatformArgsString.split(",")
+      if (linePlatformArgs[0]) {
+        platform = linePlatformArgs[0]
+      }
+      if (linePlatformArgs[1]) {
+        actressID = linePlatformArgs[1]
+      }
     }
 
     if (!token) {
-      if (code && platform) {
-        fetchToken(code, platform)
+      if (code && platform && linePlatformArgsString != null) {
+        fetchToken(code, platform, "https://" + window.location.host + "?linePlatformArgs=" + linePlatformArgsString)
+        return
+      } else if (code && platform) {
+        fetchToken(code, platform, "https://" + window.location.host)
         return
       }
       navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`, { replace: true })

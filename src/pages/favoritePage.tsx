@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import Bar from "../components/Bar";
-import Carousel from "../components/Carousel";
 import Scroll from "../components/Scroll";
 import AdCard from "../components/AdCard";
 import Button from "@material-ui/core/Button";
