@@ -1,17 +1,32 @@
 import Cookies from "js-cookie";
 import { useState, useCallback } from 'react'
 
+export interface Token {
+  isSet: boolean
+  rawData: string
+}
+
 export default function useToken() {
-  const [token, setToken] = useState(Cookies.get("token"))
+  const cookieToken = Cookies.get("token")
+  const rawData = cookieToken ? cookieToken : ""
+  const [token, setToken] = useState<Token>({
+    isSet: false,
+    rawData: rawData,
+  })
 
   const setTokenWithCookie = useCallback((token: string) => {
-    Cookies.set("token", token, { expires: 7, secure: true }) // TODO: httpOnly: true
-    setToken(token)
+    console.debug("set token: ", token)
+    if (token) {
+      var now = new Date();
+      now.setMinutes(now.getMinutes() + 30)
+      Cookies.set("token", token, { expires: new Date(now), secure: true }) // TODO: httpOnly: true
+    }
+    setToken({
+      isSet: true,
+      rawData: token,
+    })
   }, [])
 
   return { token, setTokenWithCookie }
 }
 
-export function getToken() {
-  return Cookies.get("token")
-}

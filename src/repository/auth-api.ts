@@ -5,23 +5,26 @@ const createAuthAPIRepo = (): authAPIRepo => {
   const baseURL = process.env.REACT_APP_API_URL
 
   return {
-    // verifyLIFF: async (accessToken: string, liffid: string): Promise<verifyCodeAPIResponse> => {
-    //   const response = await fetch(`${baseURL}/verifyLIFF`, {
-    //     method: 'POST',
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({ "accessToken": accessToken, "liffid": liffid }),
-    //   })
-    //   if (!response.ok) {
-    //     throw new Error(response.statusText)
-    //   }
-    //   const responseJSON = await response.json()
+    verifyLIFFToken: async (liffToken: string): Promise<verifyCodeAPIResponse> => {
+      const response = await fetch(`${baseURL}/api/verifyLIFFToken`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ "liff_token": liffToken }),
+      })
+      if (!response.ok) {
+        throw new Error(response.statusText)
+      }
 
-    //   return {
-    //     accessToken: responseJSON["access_token"]
-    //   }
-    // },
+      const responseJSON = await response.json()
+
+      console.debug("fetch token from liff response: ", responseJSON)
+
+      return {
+        accessToken: responseJSON["access_token"]
+      }
+    },
     verifyLineCode: async (code: string, redirectURI: string): Promise<verifyCodeAPIResponse> => {
       const response = await fetch(`${baseURL}/api/verifyLineCode`, {
         method: 'POST',
@@ -36,12 +39,14 @@ const createAuthAPIRepo = (): authAPIRepo => {
 
       const responseJSON = await response.json()
 
+      console.debug("fetch token from line response: ", responseJSON)
+
       return {
         accessToken: responseJSON["access_token"]
       }
     },
     verifyDiscordCode: async (code: string): Promise<verifyCodeAPIResponse> => {
-      const response = await fetch(`${baseURL}/verifyDiscordCode`, {
+      const response = await fetch(`${baseURL}/ew`, {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",

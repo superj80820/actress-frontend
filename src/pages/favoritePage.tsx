@@ -7,35 +7,21 @@ import ActressCard from "../components/ActressCard";
 import DonateCard from "../components/DonateCard";
 import { useNavigate } from 'react-router-dom';
 import { actress } from "../domain/actress";
-import useToken, { getToken } from '../repository/auth-storage';
 import createActressAPIRepo from '../repository/actress-api'
 import { ErrorExpired } from '../domain/error';
-import { useSearchParams } from 'react-router-dom';
+import { useAuth, AuthContextInterface } from '../components/AuthContext';
 
 export default function FavoritePage() {
+  const { actressID, token } = useAuth() as AuthContextInterface
   const navigate = useNavigate()
   const [favorites, setFavorites] = useState<actress[]>([])
   const actressAPIRepo = useMemo(() => createActressAPIRepo(), [])
-  const { token } = useToken()
-  const [actressID, setActressID] = useState('')
-  const [searchParams] = useSearchParams()
 
   useEffect(() => {
-    const actressID = searchParams.get("actressID")
-    if (!actressID) {
-      return
-    }
-    const token = getToken()
-    if (!token) {
-      navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`, { replace: true })
-      return
-    }
-    setActressID(actressID)
-    if (!token) {
-      return
-    }
-    (async (token: string) => {
-      const favorites = await actressAPIRepo.getFavorites(token)
+    console.debug("favorite page actressID:" + actressID);
+
+    (async (token) => {
+      const favorites = await actressAPIRepo.getFavorites(token.rawData)
         .catch(err => {
           if (err instanceof ErrorExpired) {
             navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`, { replace: true })
@@ -47,7 +33,7 @@ export default function FavoritePage() {
       }
       setFavorites(favorites)
     })(token)
-  }, [searchParams, navigate, actressAPIRepo])
+  }, [actressID, token, navigate, actressAPIRepo])
 
   return (
     <div className="grid-container">
@@ -93,14 +79,14 @@ export default function FavoritePage() {
                     if (!token) {
                       return
                     }
-                    await actressAPIRepo.removeFavorite(item.id, token)
+                    await actressAPIRepo.removeFavorite(item.id, token.rawData)
                       .catch(err => {
                         if (err instanceof ErrorExpired) {
                           navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`, { replace: true })
                         }
                       })
                     alert("移除成功")
-                    const favorites = await actressAPIRepo.getFavorites(token)
+                    const favorites = await actressAPIRepo.getFavorites(token.rawData)
                       .catch(err => {
                         if (err instanceof ErrorExpired) {
                           navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`, { replace: true })

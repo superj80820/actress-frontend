@@ -8,28 +8,19 @@ import { actress } from '../domain/actress'
 import Button from "@material-ui/core/Button";
 import AdCard from "../components/AdCard";
 import DonateCard from "../components/DonateCard";
-import { useSearchParams } from 'react-router-dom';
-import useToken, { getToken } from '../repository/auth-storage';
 import { ErrorAlreadyDone, ErrorExpired } from '../domain/error';
+import { useAuth, AuthContextInterface } from '../components/AuthContext';
 
 export default function SearchPage() {
+  const { actressID, token } = useAuth() as AuthContextInterface
   const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
   const [actress, setActress] = useState<actress>()
   const actressAPIRepo = useMemo(() => createActressAPIRepo(), [])
-  const { token } = useToken()
 
   useEffect(() => {
-    const actressID = searchParams.get("actressID")
-    if (!actressID) {
-      return
-    }
     (async (actressID: string) => {
-      const token = getToken()
-      if (!token) {
-        navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`, { replace: true })
-        return
-      }
+      console.debug("search page actressID:", actressID);
+
       const actressInformation = await actressAPIRepo.getActressByID(actressID)
         .catch(err => {
           if (err instanceof ErrorExpired) {
@@ -41,7 +32,7 @@ export default function SearchPage() {
       }
       setActress(actressInformation)
     })(actressID)
-  }, [searchParams, navigate, actressAPIRepo, token])
+  }, [actressID, navigate, actressAPIRepo, token])
 
   return (
     <div className="grid-container">
@@ -88,7 +79,7 @@ export default function SearchPage() {
                       if (!token) {
                         return
                       }
-                      actressAPIRepo.addFavorite(actress.id, token)
+                      actressAPIRepo.addFavorite(actress.id, token.rawData)
                         .then(() => {
                           alert("加入成功")
                         })
