@@ -83,8 +83,6 @@ export default function LoginCard(prop: { ActressID: string | null }) {
   const lineLogin = (actressID: string | null) => {
     let redirectArgs = ["line"]
 
-    alert("redirect url: " + window.location.origin)
-
     if (actressID) {
       redirectArgs.push(actressID)
     }

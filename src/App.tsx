@@ -8,8 +8,6 @@ import FavoritePage from "./pages/favoritePage";
 import "./App.css";
 
 function App() {
-  alert("york version 14")
-
   return (
     <AuthContextProvider>
       <Router>

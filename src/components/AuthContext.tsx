@@ -88,10 +88,8 @@ export const AuthContextProvider = (props: { children: ReactNode | ReactNode[] }
               break
             default:
               if (token.rawData) {
-                alert("york already" + JSON.stringify(token))
                 setTokenWithCookie(token.rawData)
               } else {
-                alert("york not already" + JSON.stringify(token))
                 setTokenWithCookie("")
               }
               break

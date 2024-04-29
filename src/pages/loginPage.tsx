@@ -1,11 +1,9 @@
 import * as React from 'react'
 import LoginCard from "../components/LoginCard";
-import { useSearchParams } from 'react-router-dom';
-
+import { useAuth, AuthContextInterface } from '../components/AuthContext';
 
 export default function LoginPage() {
-  const [searchParams] = useSearchParams()
-  const actressID = searchParams.get("actressID")
+  const { actressID } = useAuth() as AuthContextInterface
 
   return (
     <div className="grid-container">
