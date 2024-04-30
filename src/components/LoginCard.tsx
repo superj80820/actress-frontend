@@ -143,7 +143,7 @@ export default function LoginCard(prop: { ActressID: string | null }) {
               Line
             </Button>
           </div>
-          <div className={classes.buttonGridItem}>
+          {/* <div className={classes.buttonGridItem}>
             <Button
               className={classes.button}
               style={{
@@ -176,7 +176,7 @@ export default function LoginCard(prop: { ActressID: string | null }) {
             >
               Telegram
             </Button>
-          </div>
+          </div> */}
         </div>
       </CardContent>
     </Card>

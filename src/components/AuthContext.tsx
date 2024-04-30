@@ -10,9 +10,9 @@ export interface AuthContextInterface {
 }
 
 let AuthContext = createContext<AuthContextInterface | null>(null)
-const VITE_LIFF_ID = '1655529572-4Dy9PYD3';
 
 export const AuthContextProvider = (props: { children: ReactNode | ReactNode[] }) => {
+  const liffID = "1655529572-bv0kM39q" // york TODO: set to config
   const authAPIRepo = useMemo(() => createAuthAPIRepo(), [])
   const [actressID, setActressID] = useState("");
   const { token, setTokenWithCookie } = useToken()
@@ -24,7 +24,7 @@ export const AuthContextProvider = (props: { children: ReactNode | ReactNode[] }
 
     liff
       .init({
-        liffId: VITE_LIFF_ID,
+        liffId: liffID,
       })
       .then(() => {
         const liffToken = liff.getIDToken()
