@@ -51,34 +51,34 @@ export default function LoginCard(prop: { ActressID: string | null }) {
     </Icon>
   );
 
-  const discordIcon = (
-    <Icon>
-      <img
-        src={process.env.PUBLIC_URL + "/images/discord_icon.svg"}
-        alt="discord icon"
-        style={{
-          width: "140%",
-          position: "relative",
-          bottom: "5px",
-          right: "5px",
-        }}
-      />
-    </Icon>
-  );
+  // const discordIcon = (
+  //   <Icon>
+  //     <img
+  //       src={process.env.PUBLIC_URL + "/images/discord_icon.svg"}
+  //       alt="discord icon"
+  //       style={{
+  //         width: "140%",
+  //         position: "relative",
+  //         bottom: "5px",
+  //         right: "5px",
+  //       }}
+  //     />
+  //   </Icon>
+  // );
 
-  const telegramIcon = (
-    <Icon>
-      <img
-        src={process.env.PUBLIC_URL + "/images/telegram_icon.png"}
-        alt="telegram icon"
-        style={{
-          width: "95%",
-          position: "relative",
-          bottom: "6px",
-        }}
-      />
-    </Icon>
-  );
+  // const telegramIcon = (
+  //   <Icon>
+  //     <img
+  //       src={process.env.PUBLIC_URL + "/images/telegram_icon.png"}
+  //       alt="telegram icon"
+  //       style={{
+  //         width: "95%",
+  //         position: "relative",
+  //         bottom: "6px",
+  //       }}
+  //     />
+  //   </Icon>
+  // );
 
   const lineLogin = (actressID: string | null) => {
     let redirectArgs = ["line"]
@@ -97,18 +97,18 @@ export default function LoginCard(prop: { ActressID: string | null }) {
     );
   }
 
-  const telegramLogin = (user: any) => {
-    window.location.replace(
-      `${window.location.origin}?platform=telegram&code=${btoa(
-        JSON.stringify(user)
-      )}`
-    );
-  };
+  // const telegramLogin = (user: any) => {
+  //   window.location.replace(
+  //     `${window.location.origin}?platform=telegram&code=${btoa(
+  //       JSON.stringify(user)
+  //     )}`
+  //   );
+  // };
 
-  const discordLogin = () =>
-    window.location.replace(
-      "https://discord.com/api/oauth2/authorize?client_id=939965475629178911&redirect_uri=https%3A%2F%2Fmessfar.com%2F%3Fplatform%3Ddiscord&response_type=code&scope=identify%20email"
-    );
+  // const discordLogin = () =>
+  //   window.location.replace(
+  //     "https://discord.com/api/oauth2/authorize?client_id=939965475629178911&redirect_uri=https%3A%2F%2Fmessfar.com%2F%3Fplatform%3Ddiscord&response_type=code&scope=identify%20email"
+  //   );
 
   return (
     <Card className={classes.root}>

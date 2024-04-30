@@ -17,12 +17,11 @@ const ScrollContainer = (props: { children: ReactNode[] }) => {
 
   useEffect(() => {
     checkScroll();
-    // 处理窗口尺寸变化
     window.addEventListener('resize', checkScroll);
     return () => {
       window.removeEventListener('resize', checkScroll);
     };
-  }, []);
+  }, [props.children]);
 
   return (
     <div className="scroll-container" ref={scrollContainerRef} style={{ justifyContent: justifyContent }}>
