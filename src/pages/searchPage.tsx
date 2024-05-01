@@ -8,7 +8,7 @@ import { actress } from '../domain/actress'
 import Button from "@material-ui/core/Button";
 import AdCard from "../components/AdCard";
 import DonateCard from "../components/DonateCard";
-import { ErrorAlreadyDone, ErrorExpired } from '../domain/error';
+import { ErrorAlreadyDone, ErrorToken } from '../domain/error';
 import { useAuth, AuthContextInterface } from '../components/AuthContext';
 import UploadActressCard from "../components/UploadActressCard";
 
@@ -24,8 +24,8 @@ export default function SearchPage() {
 
       const actressInformation = await actressAPIRepo.getActressByID(actressID)
         .catch(err => {
-          if (err instanceof ErrorExpired) {
-            navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`, { replace: true })
+          if (err instanceof ErrorToken) {
+            navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`)
           }
         })
       if (!actressInformation) {
@@ -85,8 +85,8 @@ export default function SearchPage() {
                           alert("加入成功")
                         })
                         .catch(err => {
-                          if (err instanceof ErrorExpired) {
-                            navigate(`/login?${actress.id ? `actressID=${actress.id}` : ""}`, { replace: true })
+                          if (err instanceof ErrorToken) {
+                            navigate(`/login?${actress.id ? `actressID=${actress.id}` : ""}`)
                           } else if (err instanceof ErrorAlreadyDone) {
                             alert("已存在於我心愛的女孩")
                           }

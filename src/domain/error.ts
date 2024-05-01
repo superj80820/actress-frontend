@@ -1,7 +1,12 @@
-export class ErrorExpired extends Error {
-  constructor(message: string) {
+export class ErrorToken extends Error {
+  errorCode: string
+  errorMessage: string
+
+  constructor(code: string, message: string) {
     super(message);
-    this.name = 'expired';
+    this.name = 'error token';
+    this.errorCode = code
+    this.errorMessage = message
   }
 }
 

@@ -33,7 +33,7 @@ export default function Bar() {
       <Toolbar>
         <Button
           color="inherit"
-          onClick={() => navigate("/", { replace: true })}
+          onClick={() => navigate("/")}
         >
           {messfarAvatar}
         </Button>
@@ -41,7 +41,7 @@ export default function Bar() {
           style={{
             color: location.pathname === "/search" ? red[200] : "#000000",
           }}
-          onClick={() => navigate("/search", { replace: true })}
+          onClick={() => navigate("/search")}
           color="inherit"
         >
           搜尋
@@ -52,7 +52,7 @@ export default function Bar() {
           style={{
             color: location.pathname === "/favorite" ? red[200] : "#000000",
           }}
-          onClick={() => navigate("/favorite", { replace: true })}
+          onClick={() => navigate("/favorite")}
           color="inherit"
         >
           我心愛的女孩

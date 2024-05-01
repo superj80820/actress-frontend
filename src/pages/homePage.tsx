@@ -7,26 +7,23 @@ import Bar from "../components/Bar";
 
 export default function HomePage() {
   const navigate = useNavigate()
-  const { actressID, token } = useAuth() as AuthContextInterface
+  const { actressID, token, platform } = useAuth() as AuthContextInterface
 
   useEffect(() => {
     if (!token.isSet) {
       return
     }
 
-    console.debug("token raw data: ", token.rawData)
+    console.debug("token raw data: ", token.rawData, "platform: ", platform)
 
-    // if (!token.rawData) {
-    //   console.log("to login page")
-    //   navigate("/login", { replace: true })
-    // } else if (actressID) {
-    //   console.log("to search page")
-    //   navigate("/search", { replace: true })
-    // } else {
-    //   console.log("to favorite page")
-    //   navigate(`/favorite`, { replace: true })
-    // }
-  }, [actressID, navigate, token])
+    if (token.rawData === "" && platform === "liff") {
+      console.log("to login page")
+      navigate("/login")
+    } else if (token.rawData !== "" && actressID && platform === "liff") {
+      console.log("to search page")
+      navigate("/search")
+    }
+  }, [actressID, navigate, token, platform])
 
   return (
     <div className="grid-container">
@@ -36,9 +33,9 @@ export default function HomePage() {
       <div className="grid-item">
         <div className="home-page-container">
           <div className="home-page-content">
-            <span>髒沙發！</span>
+            <span>真心為您！</span>
             <h1>
-              全面的女星辨識庫！全心全力幫您找到心愛的女孩
+              髒沙發！全面的女星辨識庫！全心全力為您找到心愛的女孩
             </h1>
             <p>
               上傳圖片即可辨識獲取女星資訊

@@ -1,5 +1,5 @@
 import { actress, actressAPIRepo } from "../domain/actress"
-import { ErrorExpired, ErrorAlreadyDone } from "../domain/error"
+import { ErrorToken, ErrorAlreadyDone } from "../domain/error"
 
 const createActressAPIRepo = (): actressAPIRepo => {
   const baseURL = process.env.REACT_APP_API_URL
@@ -9,10 +9,7 @@ const createActressAPIRepo = (): actressAPIRepo => {
       const response = await fetch(`${baseURL}/api/actress/${actressID}`)
       if (response.status === 401) {
         const responseJSON = await response.json()
-        if (responseJSON["code"] === 3) {
-          throw new ErrorExpired(responseJSON["message"])
-        }
-        throw new Error("unknown unauthorized status")
+        throw new ErrorToken(responseJSON["code"], responseJSON["message"])
       } else if (response.status !== 200) {
         throw new Error(`fetch failed. status ${response.status}, body: ${await response.text()}`)
       }
@@ -36,10 +33,7 @@ const createActressAPIRepo = (): actressAPIRepo => {
       })
       if (response.status === 401) {
         const responseJSON = await response.json()
-        if (responseJSON["code"] === 3) {
-          throw new ErrorExpired(responseJSON["message"])
-        }
-        throw new Error("unknown unauthorized status")
+        throw new ErrorToken(responseJSON["code"], responseJSON["message"])
       } else if (response.status !== 200) {
         throw new Error(`fetch failed. status ${response.status}, body: ${await response.text()}`)
       }
@@ -83,10 +77,7 @@ const createActressAPIRepo = (): actressAPIRepo => {
       })
       if (response.status === 401) {
         const responseJSON = await response.json()
-        if (responseJSON["code"] === 3) {
-          throw new ErrorExpired(responseJSON["message"])
-        }
-        throw new Error("unknown unauthorized status")
+        throw new ErrorToken(responseJSON["code"], responseJSON["message"])
       } else if (response.status === 409) {
         throw new ErrorAlreadyDone("already insert favorite error")
       } else if (response.status !== 200) {
@@ -144,10 +135,7 @@ const createActressAPIRepo = (): actressAPIRepo => {
       })
       if (response.status === 401) {
         const responseJSON = await response.json()
-        if (responseJSON["code"] === 3) {
-          throw new ErrorExpired(responseJSON["message"])
-        }
-        throw new Error("unknown unauthorized status")
+        throw new ErrorToken(responseJSON["code"], responseJSON["message"])
       } else if (response.status !== 200) {
         throw new Error(`fetch failed. status ${response.status}, body: ${await response.text()}`)
       }

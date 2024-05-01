@@ -8,7 +8,7 @@ import DonateCard from "../components/DonateCard";
 import { useNavigate } from 'react-router-dom';
 import { actress } from "../domain/actress";
 import createActressAPIRepo from '../repository/actress-api'
-import { ErrorExpired } from '../domain/error';
+import { ErrorToken } from '../domain/error';
 import { useAuth, AuthContextInterface } from '../components/AuthContext';
 
 export default function FavoritePage() {
@@ -23,8 +23,8 @@ export default function FavoritePage() {
     (async (token) => {
       const favorites = await actressAPIRepo.getFavorites(token.rawData)
         .catch(err => {
-          if (err instanceof ErrorExpired) {
-            navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`, { replace: true })
+          if (err instanceof ErrorToken) {
+            navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`)
           }
         })
       if (!favorites) {
@@ -81,15 +81,15 @@ export default function FavoritePage() {
                     }
                     await actressAPIRepo.removeFavorite(item.id, token.rawData)
                       .catch(err => {
-                        if (err instanceof ErrorExpired) {
-                          navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`, { replace: true })
+                        if (err instanceof ErrorToken) {
+                          navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`)
                         }
                       })
                     alert("移除成功")
                     const favorites = await actressAPIRepo.getFavorites(token.rawData)
                       .catch(err => {
-                        if (err instanceof ErrorExpired) {
-                          navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`, { replace: true })
+                        if (err instanceof ErrorToken) {
+                          navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`)
                         }
                       })
                     if (!favorites) {

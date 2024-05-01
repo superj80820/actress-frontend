@@ -7,7 +7,7 @@ import Button from "@material-ui/core/Button";
 import Avatar from "@material-ui/core/Avatar";
 import { useNavigate } from 'react-router-dom';
 import { red } from "@material-ui/core/colors";
-import { ErrorExpired } from '../domain/error';
+import { ErrorToken } from '../domain/error';
 import createActressAPIRepo from '../repository/actress-api'
 import { useAuth, AuthContextInterface } from '../components/AuthContext';
 
@@ -51,8 +51,8 @@ export default function UploadActressCard(prop: {
     if (imageFile) {
       setUploadTitle("上傳圖片中...")
       const actresses = await actressAPIRepo.searchActressByFace(imageFile, token.rawData).catch(err => {
-        if (err instanceof ErrorExpired) {
-          navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`, { replace: true })
+        if (err instanceof ErrorToken) {
+          navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`)
           return
         }
         console.error("upload failed", err)
@@ -60,7 +60,7 @@ export default function UploadActressCard(prop: {
         setUploadTitle(uploadOriginTitle)
       })
       if (!actresses || actresses.length <= 0) {
-        alert("抱歉QwQ，找不到女星...")
+        alert("辨識失敗")
         setUploadTitle(uploadOriginTitle)
         return
       }

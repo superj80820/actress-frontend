@@ -6,6 +6,7 @@ import { verifyCodeAPIResponse } from '../domain/auth';
 
 export interface AuthContextInterface {
   actressID: string
+  platform: string | null
   token: Token
   setActressID: (actressID: string) => void
 }
@@ -16,6 +17,7 @@ export const AuthContextProvider = (props: { children: ReactNode | ReactNode[] }
   const liffID = "1655529572-bv0kM39q" // york TODO: set to config
   const authAPIRepo = useMemo(() => createAuthAPIRepo(), [])
   const [actressID, setActressID] = useState("");
+  const [platform, setPlatform] = useState<string | null>("");
   const { token, setTokenWithCookie } = useToken()
 
   useEffect(() => {
@@ -50,6 +52,8 @@ export const AuthContextProvider = (props: { children: ReactNode | ReactNode[] }
         if (liffToken) {
           platform = "liff"
         }
+
+        setPlatform(platform)
 
         let redirectURI = "https://" + window.location.host
         if (linePlatformArgsString) {
@@ -105,7 +109,7 @@ export const AuthContextProvider = (props: { children: ReactNode | ReactNode[] }
   }, [authAPIRepo, setTokenWithCookie, token]);
 
   return (
-    <AuthContext.Provider value={{ actressID, token, setActressID }}>
+    <AuthContext.Provider value={{ actressID, token, platform, setActressID }}>
       {props.children}
     </AuthContext.Provider>
   )
