@@ -79,3 +79,42 @@
   white-space: nowrap;
   /* 防止元素折行 */
 }
+
+.home-page-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.home-page-content {
+  flex: 1;
+  padding: auto;
+  /* border: 1px solid #ccc; */
+}
+
+.home-page-content span {
+  color: #ff2c9c;
+  display: block;
+  margin: 50px 0 17px;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.home-page-content h1 {
+  color: #18181b;
+  font-size: 54px;
+  line-height: 54px;
+  font-weight: 800;
+  margin: 12px 0 17px;
+  text-transform: capitalize;
+  text-align: left;
+}
+
+.home-page-content p {
+  margin-bottom: 20px;
+  font-size: 18px;
+  text-align: left;
+}

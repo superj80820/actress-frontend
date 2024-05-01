@@ -5,12 +5,25 @@ import Button from "@material-ui/core/Button";
 import { red } from "@material-ui/core/colors";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth, AuthContextInterface } from '../components/AuthContext';
-
+import Avatar from "@material-ui/core/Avatar";
 
 export default function Bar() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { actressID } = useAuth() as AuthContextInterface
+  const { token } = useAuth() as AuthContextInterface;
+  const messfarAvatar = (
+    <Avatar>
+      <img
+        src={process.env.PUBLIC_URL + '/images/messfar_icon.jpg'}
+        alt="messfar icon"
+        style={{
+          width: "130%",
+          position: "relative",
+          right: "5px",
+        }}
+      />
+    </Avatar>
+  );
 
   return (
     <AppBar
@@ -18,20 +31,24 @@ export default function Bar() {
       style={{ color: "#000000", background: "#ffffff" }}
     >
       <Toolbar>
-        {actressID ? (
-          <Button
-            style={{
-              color: location.pathname === "/search" ? red[200] : "#000000",
-            }}
-            onClick={() => navigate("/search", { replace: true })}
-            color="inherit"
-          >
-            搜尋結果
-          </Button>
-        ) : (
+        <Button
+          color="inherit"
+          onClick={() => navigate("/", { replace: true })}
+        >
+          {messfarAvatar}
+        </Button>
+        {token.rawData !== "" ? (<Button
+          style={{
+            color: location.pathname === "/search" ? red[200] : "#000000",
+          }}
+          onClick={() => navigate("/search", { replace: true })}
+          color="inherit"
+        >
+          搜尋
+        </Button>) : (
           <></>
         )}
-        <Button
+        {token.rawData !== "" ? (<Button
           style={{
             color: location.pathname === "/favorite" ? red[200] : "#000000",
           }}
@@ -39,7 +56,9 @@ export default function Bar() {
           color="inherit"
         >
           我心愛的女孩
-        </Button>
+        </Button>) : (
+          <></>
+        )}
       </Toolbar>
     </AppBar>
   )

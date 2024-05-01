@@ -7,6 +7,7 @@ import { verifyCodeAPIResponse } from '../domain/auth';
 export interface AuthContextInterface {
   actressID: string
   token: Token
+  setActressID: (actressID: string) => void
 }
 
 let AuthContext = createContext<AuthContextInterface | null>(null)
@@ -104,7 +105,7 @@ export const AuthContextProvider = (props: { children: ReactNode | ReactNode[] }
   }, [authAPIRepo, setTokenWithCookie, token]);
 
   return (
-    <AuthContext.Provider value={{ actressID, token }}>
+    <AuthContext.Provider value={{ actressID, token, setActressID }}>
       {props.children}
     </AuthContext.Provider>
   )

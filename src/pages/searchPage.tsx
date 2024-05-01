@@ -10,6 +10,7 @@ import AdCard from "../components/AdCard";
 import DonateCard from "../components/DonateCard";
 import { ErrorAlreadyDone, ErrorExpired } from '../domain/error';
 import { useAuth, AuthContextInterface } from '../components/AuthContext';
+import UploadActressCard from "../components/UploadActressCard";
 
 export default function SearchPage() {
   const { actressID, token } = useAuth() as AuthContextInterface
@@ -98,7 +99,9 @@ export default function SearchPage() {
                   </Button>
                 }
               />
-            ] : []
+            ] : [
+              <UploadActressCard></UploadActressCard>
+            ]
           }
         </Scroll>
       </div>

@@ -16,7 +16,7 @@ const useStyles = makeStyles((_) => ({
   },
   media: {
     height: 0,
-    paddingTop: '100%'
+    paddingTop: '100%',
   },
   avatar: {
     backgroundColor: red[200],
@@ -33,7 +33,7 @@ export default function ActressCard(prop: {
   actressID: string;
   name: string;
   image: string;
-  children: ReactNode;
+  children?: ReactNode;
 }) {
   const classes = useStyles();
   const copyNameRef = useRef<HTMLDivElement>(null);
@@ -91,9 +91,14 @@ export default function ActressCard(prop: {
               點我搜尋
             </Button>
           </div>
-          <div className="grid-button-item">
-            {prop.children}
-          </div>
+          {
+            prop.children ? (
+              <div className="grid-button-item">
+                {prop.children}
+              </div>
+            ) : (
+              <></>
+            )}
         </div>
       </CardContent>
     </Card >
