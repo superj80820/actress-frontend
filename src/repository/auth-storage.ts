@@ -16,10 +16,12 @@ export default function useToken() {
 
   const setTokenWithCookie = useCallback((token: string) => {
     console.debug("set token: ", token)
-    if (token) {
+    if (token !== "") {
       var now = new Date();
       now.setMinutes(now.getMinutes() + 30)
       Cookies.set("token", token, { expires: new Date(now), secure: true }) // TODO: httpOnly: true
+    } else {
+      Cookies.remove("token")
     }
     setToken({
       isSet: true,
@@ -29,4 +31,3 @@ export default function useToken() {
 
   return { token, setTokenWithCookie }
 }
-

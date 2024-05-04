@@ -5,11 +5,11 @@ export interface actress {
   detail: string;
 }
 
-
 export interface actressAPIRepo {
   getActressByID(actressID: string): Promise<actress>
   getFavorites(token: string): Promise<actress[]>
   searchActressByFace(image_file: File, token: string): Promise<actress[]>
+  searchActressByName(name: string, token: string): Promise<actress[]>
   addFavorite(actressID: string, token: string): Promise<void>
   removeFavorite(actressID: string, token: string): Promise<void>
 }

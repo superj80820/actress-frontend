@@ -14,14 +14,14 @@ export default function HomePage() {
       return
     }
 
-    console.debug("token raw data: ", token.rawData, "platform: ", platform)
+    console.log("token raw data: ", token.rawData, "platform: ", platform)
 
     if (token.rawData === "" && platform === "liff") {
       console.log("to login page")
       navigate("/login")
     } else if (token.rawData !== "" && actressID && platform === "liff") {
       console.log("to search page")
-      navigate("/search")
+      navigate("/imageSearch")
     }
   }, [actressID, navigate, token, platform])
 
@@ -35,15 +35,15 @@ export default function HomePage() {
           <div className="home-page-content">
             <span>真心為您！</span>
             <h1>
-              髒沙發！全面的女星辨識庫！全心全力為您找到心愛的女孩
+              髒沙發！全面的女星人臉辨識庫！努力為您找到心愛的女孩
             </h1>
             <p>
-              上傳圖片即可辨識獲取女星資訊
+              上傳圖片即可人臉辨識獲取女星資訊
             </p>
           </div>
           <div className="home-page">
             {token.rawData === "" ?
-              (<LoginCard ActressID={actressID} />)
+              (<LoginCard />)
               :
               (<AdCard />)
             }

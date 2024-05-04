@@ -7,6 +7,8 @@ import CardMedia from "@material-ui/core/CardMedia";
 import Button from "@material-ui/core/Button";
 import Icon from "@material-ui/core/Icon";
 import Typography from "@material-ui/core/Typography";
+import { CHANNEL_ID } from "../config"
+import { useAuth, AuthContextInterface } from '../components/AuthContext';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,7 +35,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function LoginCard(prop: { ActressID: string | null }) {
+export default function LoginCard() {
+  const { actressID } = useAuth() as AuthContextInterface
   const classes = useStyles();
 
   const lineIcon = (
@@ -90,11 +93,11 @@ export default function LoginCard(prop: { ActressID: string | null }) {
     window.location.replace(
       "https://access.line.me/oauth2/v2.1/authorize?" +
       "response_type=code" +
-      "&client_id=1655529572" +
+      "&client_id=" + CHANNEL_ID +
       `&redirect_uri=${window.location.origin}?` +
       `linePlatformArgs=${redirectArgs.join(",")}` +
       `&state=${new Date().getTime()}&scope=profile%20openid%20email&nonce=${new Date().getTime()}`
-    );
+    )
   }
 
   // const telegramLogin = (user: any) => {
@@ -138,7 +141,7 @@ export default function LoginCard(prop: { ActressID: string | null }) {
               variant="contained"
               disableElevation={true}
               startIcon={lineIcon}
-              onClick={() => lineLogin(prop.ActressID)}
+              onClick={() => lineLogin(actressID)}
             >
               Line
             </Button>
@@ -172,7 +175,7 @@ export default function LoginCard(prop: { ActressID: string | null }) {
               variant="contained"
               disableElevation={true}
               startIcon={telegramIcon}
-              onClick={() => telegramLogin(prop.ActressID)}
+              onClick={() => telegramLogin(actressID)}
             >
               Telegram
             </Button>

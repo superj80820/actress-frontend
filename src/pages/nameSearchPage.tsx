@@ -1,11 +1,11 @@
 import React from 'react'
-import Bar from "../components/Bar";
 import Scroll from "../components/Scroll";
+import Bar from "../components/Bar";
 import AdCard from "../components/AdCard";
 import DonateCard from "../components/DonateCard";
 
-export default function FavoritePage(prop: {
-  favorites: React.ComponentType
+export default function NameSearchPage(prop: {
+  nameSearch: React.ComponentType
 }) {
   return (
     <div className="grid-container">
@@ -38,7 +38,7 @@ export default function FavoritePage(prop: {
         </Scroll>
       </div>
       <div className="grid-item">
-        <prop.favorites></prop.favorites>
+        <prop.nameSearch></prop.nameSearch>
       </div>
     </div>
   )

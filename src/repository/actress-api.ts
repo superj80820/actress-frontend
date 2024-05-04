@@ -125,6 +125,47 @@ const createActressAPIRepo = (): actressAPIRepo => {
 
       return actresses
     },
+    searchActressByName: async (name: string, token: string): Promise<actress[]> => {
+      const headers = new Headers()
+      headers.append("Content-Type", "application/json")
+      headers.append("Authorization", `Bearer ${token}`)
+      const response = await fetch(`${baseURL}/api/user/searchActressByName/${name}`, {
+        headers: headers,
+        method: 'GET',
+      })
+      if (response.status === 401) {
+        const responseJSON = await response.json()
+        throw new ErrorToken(responseJSON["code"], responseJSON["message"])
+      } else if (response.status !== 200) {
+        throw new Error(`fetch failed. status ${response.status}, body: ${await response.text()}`)
+      }
+
+      const responseJSON = await response.json()
+
+      if (!Array.isArray(responseJSON)) {
+        throw new TypeError("provided input is not an array.");
+      }
+
+      const actresses: actress[] = []
+
+      for (const item of responseJSON) {
+        if ((typeof item.id === 'string' &&
+          typeof item.preview === 'string' &&
+          typeof item.name === 'string' &&
+          typeof item.detail === 'string')) {
+          actresses.push({
+            id: item.id,
+            image: item.preview,
+            name: item.name,
+            detail: item.detail,
+          })
+        } else {
+          throw new TypeError("not all elements are actress")
+        }
+      }
+
+      return actresses
+    },
     removeFavorite: async (actressID: string, token: string): Promise<void> => {
       const headers = new Headers()
       headers.append("Content-Type", "application/json")
@@ -139,6 +180,109 @@ const createActressAPIRepo = (): actressAPIRepo => {
       } else if (response.status !== 200) {
         throw new Error(`fetch failed. status ${response.status}, body: ${await response.text()}`)
       }
+    }
+  }
+}
+
+export const createMockActressAPIRepo = (): actressAPIRepo => {
+  return {
+    getActressByID: async (actressID: string): Promise<actress> => {
+      return {
+        "id": "19056",
+        "name": "上原亜衣",
+        "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
+        "detail": "",
+      }
+    },
+    getFavorites: async (token: string): Promise<actress[]> => {
+      return [
+        {
+          "id": "19056",
+          "name": "上原亜衣",
+          "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
+          "detail": "",
+        },
+        {
+          "id": "19056",
+          "name": "上原亜衣",
+          "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
+          "detail": "",
+        },
+        {
+          "id": "19056",
+          "name": "上原亜衣",
+          "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
+          "detail": "",
+        },
+        {
+          "id": "19056",
+          "name": "上原亜衣",
+          "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
+          "detail": "",
+        }
+      ]
+    },
+    addFavorite: async (actressID: string, token: string): Promise<void> => {
+      return
+    },
+    searchActressByFace: async (image_file: File, token: string): Promise<actress[]> => {
+      return [
+        {
+          "id": "19056",
+          "name": "上原亜衣",
+          "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
+          "detail": "",
+        },
+        {
+          "id": "19056",
+          "name": "上原亜衣",
+          "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
+          "detail": "",
+        },
+        {
+          "id": "19056",
+          "name": "上原亜衣",
+          "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
+          "detail": "",
+        },
+        {
+          "id": "19056",
+          "name": "上原亜衣",
+          "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
+          "detail": "",
+        }
+      ]
+    },
+    searchActressByName: async (name: string, token: string): Promise<actress[]> => {
+      return [
+        {
+          "id": "19056",
+          "name": "上原亜衣",
+          "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
+          "detail": "",
+        },
+        {
+          "id": "19056",
+          "name": "上原亜衣",
+          "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
+          "detail": "",
+        },
+        {
+          "id": "19056",
+          "name": "上原亜衣",
+          "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
+          "detail": "",
+        },
+        {
+          "id": "19056",
+          "name": "上原亜衣",
+          "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
+          "detail": "",
+        }
+      ]
+    },
+    removeFavorite: async (actressID: string, token: string): Promise<void> => {
+      return
     }
   }
 }
