@@ -8,7 +8,6 @@ export interface AuthContextInterface {
   authInformation: AuthInformation | null
 
   actressID: string | null
-  setActressID: (actressID: string) => void
 
   logout: () => void
 }
@@ -176,7 +175,7 @@ export const AuthContextProvider = (prop: {
   }, [actressID, authInformation, fetchToken, prop.env, setTokenWithCookie, token]);
 
   return (
-    <AuthContext.Provider value={{ actressID, setActressID, authInformation, logout }}>
+    <AuthContext.Provider value={{ actressID, authInformation, logout }}>
       {prop.children}
     </AuthContext.Provider>
   )

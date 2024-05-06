@@ -40,10 +40,10 @@ export const ImageSearch = (prop: {
 }) => {
   const classes = useStyles();
   const navigate = useNavigate()
-  const { setActressID, authInformation, actressID } = useAuth() as AuthContextInterface
+  const { authInformation, actressID } = useAuth() as AuthContextInterface
   const uploadOriginTitle = "請上傳辨識圖片(限制20MB)"
   const [uploadTitle, setUploadTitle] = useState(uploadOriginTitle)
-  const [actress, setActress] = useState<actress>()
+  const [actresses, setActresses] = useState<actress[] | null>(null)
 
   useEffect(() => {
     if (actressID === null) {
@@ -62,7 +62,9 @@ export const ImageSearch = (prop: {
       if (!actressInformation) {
         return
       }
-      setActress(actressInformation)
+      setActresses([
+        actressInformation
+      ])
     })(actressID)
   }, [actressID, navigate, prop.actressAPIRepo])
 
@@ -102,13 +104,13 @@ export const ImageSearch = (prop: {
         setUploadTitle(uploadOriginTitle)
         return
       }
-      setActressID(actresses[0].id)
+      setActresses(actresses)
       setUploadTitle(uploadOriginTitle)
     }
   };
 
   return (
-    actress ?
+    actresses !== null && actresses.length !== 0 ?
       <>
         <div className="grid-item-center-first">
           <Scroll>
@@ -136,29 +138,31 @@ export const ImageSearch = (prop: {
           </Scroll>
         </div>
         <GridActresses>
-          {[
-            <ActressCard
-              key={actress.name}
-              actressID={actress.id}
-              name={actress.name}
-              image={actress.image}
-              romanization={actress.romanization}
-              children={
-                <Button
-                  onClick={() => {
-                    if (authInformation === null || authInformation.token === null) {
-                      return
-                    }
-                    return addFavorite(actress.id, authInformation.token)
-                  }}
-                  fullWidth={true}
-                  variant="outlined"
-                >
-                  加入我心愛的女孩
-                </Button>
-              }
-            />
-          ]}
+          {
+            actresses.map(actress => (
+              <ActressCard
+                key={actress.name}
+                actressID={actress.id}
+                name={actress.name}
+                image={actress.image}
+                romanization={actress.romanization}
+                children={
+                  <Button
+                    onClick={() => {
+                      if (authInformation === null || authInformation.token === null) {
+                        return
+                      }
+                      return addFavorite(actress.id, authInformation.token)
+                    }}
+                    fullWidth={true}
+                    variant="outlined"
+                  >
+                    加入我心愛的女孩
+                  </Button>
+                }
+              />
+            ))
+          }
         </GridActresses >
       </>
       :
