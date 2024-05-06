@@ -40,18 +40,25 @@
 }
 
 .grid-container {
+  margin-top: 90px;
   display: grid;
-  grid-template-columns: auto;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
   padding: 10px;
+  gap: 10px;
 }
 
 .grid-item {
-  display: grid;
-  place-items: center;
-  /* border: 1px solid rgba(0, 0, 0, 0.8); */
-  padding: 20px;
-  font-size: 30px;
   text-align: center;
+}
+
+.grid-item-center-first {
+  grid-column: 1 / -1;
+}
+
+.grid-item-center-second {
+  /* border: 1px solid rgba(0, 0, 0, 0.8);
+  background-color: lightblue; */
+  grid-column: 2;
 }
 
 .grid-button-container {
@@ -69,22 +76,16 @@
 
 .scroll-container {
   width: 100%;
-  /* 调整为视窗宽度 */
   overflow-x: auto;
-  /* 允许水平滚动 */
   display: flex;
-  /* 使用弹性布局 */
   flex-direction: row;
-  /* 子元素水平排列 */
   white-space: nowrap;
-  /* 防止元素折行 */
 }
 
 .home-page-container {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  margin-top: 20px;
   width: 100%;
 }
 
@@ -97,7 +98,7 @@
 .home-page-content span {
   color: #ff2c9c;
   display: block;
-  margin: 50px 0 17px;
+  margin: 30px 0 17px;
   font-size: 22px;
   font-weight: 600;
   text-align: left;

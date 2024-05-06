@@ -1,124 +1,182 @@
-import React, { createContext, useEffect, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useEffect, useContext, ReactNode, useState } from 'react';
 import liff from '@line/liff';
-import useToken, { Token } from '../repository/auth-storage';
+import useToken from '../repository/auth-storage';
 import { verifyCodeAPIResponse, authAPIRepo } from '../domain/auth';
 import { LIFF_ID } from '../config';
 
 export interface AuthContextInterface {
-  actressID: string
-  platform: string | null
-  token: Token
-  setTokenWithCookie: (token: string) => void
+  authInformation: AuthInformation | null
+
+  actressID: string | null
   setActressID: (actressID: string) => void
+
+  logout: () => void
+}
+
+interface AuthInformation {
+  platform: "liff" | "web"
+  token: string | null
 }
 
 let AuthContext = createContext<AuthContextInterface | null>(null)
+
+const createFetchToken = (authAPIRepo: authAPIRepo) => ({
+  byLIFF: async (liffToken: string): Promise<string> => {
+    console.log("fetch token by liff")
+
+    const verifyCodeResponse = await authAPIRepo.verifyLIFFToken(liffToken)
+    return verifyCodeResponse.accessToken
+  },
+  byCode: async (): Promise<string> => {
+    console.log("fetch token by code")
+
+    const query = new URLSearchParams(window.location.search)
+    const code = query.get("code")
+    let platform = query.get("platform")
+    const linePlatformArgsString = query.get("linePlatformArgs")
+
+    if (linePlatformArgsString) {
+      const linePlatformArgs = linePlatformArgsString.split(",")
+      if (linePlatformArgs[0]) {
+        platform = linePlatformArgs[0]
+      }
+    }
+    let redirectURI = "https://" + window.location.host
+    if (linePlatformArgsString) {
+      redirectURI += "?linePlatformArgs=" + linePlatformArgsString
+    }
+
+    if (!code ||
+      !platform ||
+      (platform !== "line" && platform !== "discord" && platform !== "telegram")) {
+      throw Error("can not get token arguments")
+    }
+
+    let verifyCodeResponse: verifyCodeAPIResponse
+    switch (platform) {
+      case "line":
+        if (!code) {
+          throw Error("token init not has require arguments")
+        }
+        verifyCodeResponse = await authAPIRepo.verifyLineCode(code, redirectURI)
+        return verifyCodeResponse.accessToken
+      case "discord":
+        if (!code) {
+          throw Error("token init not has require arguments")
+        }
+        verifyCodeResponse = await authAPIRepo.verifyDiscordCode(code)
+        return verifyCodeResponse.accessToken
+      case "telegram":
+        if (!code) {
+          throw Error("token init not has require arguments")
+        }
+        verifyCodeResponse = await authAPIRepo.verifyTelegramCode(code)
+        return verifyCodeResponse.accessToken
+    }
+  }
+})
 
 export const AuthContextProvider = (prop: {
   children: ReactNode | ReactNode[]
   authAPIRepo: authAPIRepo
   env: string
 }) => {
-  const [actressID, setActressID] = useState("");
-  const [liffToken, setLiffToken] = useState("");
-  const [platform, setPlatform] = useState<string | null>("");
-  const { token, setTokenWithCookie } = useToken()
+  const [actressID, setActressID] = useState<string | null>(null);
+  const [authInformation, setAuthInformation] = useState<AuthInformation | null>(null);
+  const { token, setTokenWithCookie, removeTokenWithCookie } = useToken()
+  const fetchToken = createFetchToken(prop.authAPIRepo)
+  const logout = () => {
+    setAuthInformation(null)
+    removeTokenWithCookie()
+  }
 
   useEffect(() => {
-    if (token.isSet) {
-      return
-    }
+    const setActress = () => {
+      console.log("set actress")
 
-    const query = new URLSearchParams(window.location.search)
-    const code = query.get("code")
-    let platform = query.get("platform")
-    let actressID = query.get("actressID")
-    if (actressID) {
-      setActressID(actressID)
-    }
-    const linePlatformArgsString = query.get("linePlatformArgs")
-    if (linePlatformArgsString) {
-      const linePlatformArgs = linePlatformArgsString.split(",")
-      if (linePlatformArgs[0]) {
-        platform = linePlatformArgs[0]
+      if (actressID !== null) {
+        return
       }
-      if (linePlatformArgs[1]) {
-        setActressID(linePlatformArgs[1])
+
+      const query = new URLSearchParams(window.location.search)
+      let queryActressID = query.get("actressID")
+      const linePlatformArgsString = query.get("linePlatformArgs")
+
+      if (queryActressID) {
+        setActressID(queryActressID)
       }
-    }
-    if (platform !== "") {
-      setPlatform(platform)
-    }
-
-    let redirectURI = "https://" + window.location.host
-    if (linePlatformArgsString) {
-      redirectURI += "?linePlatformArgs=" + linePlatformArgsString
-    }
-
-    liff
-      .init({
-        liffId: LIFF_ID,
-      })
-      .then(() => {
-        const liffToken = liff.getIDToken()
-        if (liffToken) {
-          platform = "liff"
-          setLiffToken(liffToken)
+      if (linePlatformArgsString) {
+        const linePlatformArgs = linePlatformArgsString.split(",")
+        if (linePlatformArgs[1]) {
+          setActressID(linePlatformArgs[1])
         }
-        setPlatform(platform)
-      })
-      .catch(err => {
-        console.error('liff init failed', err);
-      });
+      }
+    }
+    const setAuth = async () => {
+      console.log("set auth")
 
-    const initToken = async (code: string | null, platform: string | null, liffToken: string | null, redirectURI: string) => {
-      let verifyCodeResponse: verifyCodeAPIResponse
-      switch (platform) {
-        case "line":
-          if (!code) {
-            throw Error("token init not has require arguments")
-          }
-          verifyCodeResponse = await prop.authAPIRepo.verifyLineCode(code, redirectURI)
-          setTokenWithCookie(verifyCodeResponse.accessToken)
-          break
-        case "discord":
-          if (!code) {
-            throw Error("token init not has require arguments")
-          }
-          verifyCodeResponse = await prop.authAPIRepo.verifyDiscordCode(code)
-          setTokenWithCookie(verifyCodeResponse.accessToken)
-          break
-        case "telegram":
-          if (!code) {
-            throw Error("token init not has require arguments")
-          }
-          verifyCodeResponse = await prop.authAPIRepo.verifyTelegramCode(code)
-          setTokenWithCookie(verifyCodeResponse.accessToken)
-          break
-        case "liff":
-          if (!liffToken) {
-            throw Error("token init not has require arguments")
-          }
-          verifyCodeResponse = await prop.authAPIRepo.verifyLIFFToken(liffToken)
-          setTokenWithCookie(verifyCodeResponse.accessToken)
-          break
-        default:
-          if (token.rawData) {
-            setTokenWithCookie(token.rawData)
-          } else if (prop.env === "development") {
-            setTokenWithCookie("development_token")
-          } else {
-            setTokenWithCookie("")
-          }
-          break
+      if (authInformation !== null) {
+        return
+      }
+
+      await liff.init({ liffId: LIFF_ID }).catch(err => {
+        console.error('liff init failed', err);
+      })
+
+      const liffToken = liff.getIDToken()
+      const platform = liffToken ? "liff" : "web"
+
+      if (token) {
+        setAuthInformation({
+          platform: platform,
+          token: token
+        })
+      } else {
+        if (liffToken) {
+          fetchToken.byLIFF(liffToken)
+            .then(token => {
+              setTokenWithCookie(token)
+              setAuthInformation({
+                platform: platform,
+                token: token,
+              })
+            })
+            .catch(() => {
+              setAuthInformation({
+                platform: platform,
+                token: null
+              })
+            })
+        } else if (prop.env === "development") {
+          setAuthInformation({
+            platform: platform,
+            token: "development",
+          })
+        } else {
+          fetchToken.byCode()
+            .then(token => {
+              setTokenWithCookie(token)
+              setAuthInformation({
+                platform: platform,
+                token: token,
+              })
+            })
+            .catch(() => {
+              setAuthInformation({
+                platform: platform,
+                token: null,
+              })
+            })
+        }
       }
     }
 
-    initToken(code, platform, liffToken, redirectURI)
-  }, [prop.authAPIRepo, setTokenWithCookie, liffToken, token, prop.env]);
+    setActress()
+    setAuth()
+  }, [actressID, authInformation, fetchToken, prop.env, setTokenWithCookie, token]);
 
   return (
-    <AuthContext.Provider value={{ actressID, token, platform, setActressID, setTokenWithCookie }}>
+    <AuthContext.Provider value={{ actressID, setActressID, authInformation, logout }}>
       {prop.children}
     </AuthContext.Provider>
   )

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Scroll from "../components/Scroll";
+import GridActresses from "../components/GridActresses";
 import Button from "@material-ui/core/Button";
 import ActressCard from "../components/ActressCard";
 import { useNavigate } from 'react-router-dom';
@@ -10,13 +10,18 @@ import { useAuth, AuthContextInterface } from '../components/AuthContext';
 export const Favorites = (prop: { actressAPIRepo: actressAPIRepo }) => {
   const navigate = useNavigate()
   const [favorites, setFavorites] = useState<actress[]>([])
-  const { actressID, token } = useAuth() as AuthContextInterface
+  const { actressID, authInformation } = useAuth() as AuthContextInterface
 
   useEffect(() => {
+    if (!authInformation || authInformation.token === null) {
+      return
+    }
+    const token = authInformation.token
+
     console.debug("favorite page actressID:" + actressID);
 
-    (async (token) => {
-      const favorites = await prop.actressAPIRepo.getFavorites(token.rawData)
+    (async () => {
+      const favorites = await prop.actressAPIRepo.getFavorites(token)
         .catch(err => {
           if (err instanceof ErrorToken) {
             navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`)
@@ -27,31 +32,32 @@ export const Favorites = (prop: { actressAPIRepo: actressAPIRepo }) => {
         return
       }
       setFavorites(favorites)
-    })(token)
-  }, [actressID, token, navigate, prop.actressAPIRepo])
+    })()
+  }, [actressID, authInformation, navigate, prop.actressAPIRepo])
 
   return (
-    <Scroll>
+    authInformation ? <GridActresses>
       {
         favorites.length !== 0 ? favorites.map((item) => (<ActressCard
           key={item.id}
           actressID={item.id}
           name={item.name}
           image={item.image}
+          romanization={item.romanization}
           children={
             <Button
               onClick={async () => {
-                if (!token) {
+                if (!authInformation.token) {
                   return
                 }
-                await prop.actressAPIRepo.removeFavorite(item.id, token.rawData)
+                await prop.actressAPIRepo.removeFavorite(item.id, authInformation.token)
                   .catch(err => {
                     if (err instanceof ErrorToken) {
                       navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`)
                     }
                   })
                 alert("移除成功")
-                const favorites = await prop.actressAPIRepo.getFavorites(token.rawData)
+                const favorites = await prop.actressAPIRepo.getFavorites(authInformation.token)
                   .catch(err => {
                     if (err instanceof ErrorToken) {
                       navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`)
@@ -71,6 +77,6 @@ export const Favorites = (prop: { actressAPIRepo: actressAPIRepo }) => {
           }
         />)) : []
       }
-    </Scroll>
+    </GridActresses> : <></>
   )
 }

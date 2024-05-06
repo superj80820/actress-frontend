@@ -1,8 +1,9 @@
 import { actress, actressAPIRepo } from "../domain/actress"
 import { ErrorToken, ErrorAlreadyDone } from "../domain/error"
+import { apiURL } from "../config"
 
 const createActressAPIRepo = (): actressAPIRepo => {
-  const baseURL = process.env.REACT_APP_API_URL
+  const baseURL = apiURL
 
   return {
     getActressByID: async (actressID: string): Promise<actress> => {
@@ -111,12 +112,14 @@ const createActressAPIRepo = (): actressAPIRepo => {
         if ((typeof item.id === 'string' &&
           typeof item.preview === 'string' &&
           typeof item.name === 'string' &&
-          typeof item.detail === 'string')) {
+          typeof item.detail === 'string' &&
+          typeof item.romanization === 'string')) {
           actresses.push({
             id: item.id,
             image: item.preview,
             name: item.name,
             detail: item.detail,
+            romanization: item.romanization,
           })
         } else {
           throw new TypeError("not all elements are actress")
@@ -191,7 +194,7 @@ export const createMockActressAPIRepo = (): actressAPIRepo => {
         "id": "19056",
         "name": "上原亜衣",
         "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
-        "detail": "",
+        "detail": ""
       }
     },
     getFavorites: async (token: string): Promise<actress[]> => {
@@ -219,6 +222,17 @@ export const createMockActressAPIRepo = (): actressAPIRepo => {
           "name": "上原亜衣",
           "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
           "detail": "",
+        }, {
+          "id": "19056",
+          "name": "上原亜衣",
+          "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
+          "detail": "",
+        },
+        {
+          "id": "19056",
+          "name": "上原亜衣",
+          "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
+          "detail": "",
         }
       ]
     },
@@ -232,24 +246,28 @@ export const createMockActressAPIRepo = (): actressAPIRepo => {
           "name": "上原亜衣",
           "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
           "detail": "",
+          "romanization": "10%",
         },
         {
           "id": "19056",
           "name": "上原亜衣",
           "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
           "detail": "",
+          "romanization": "10%",
         },
         {
           "id": "19056",
           "name": "上原亜衣",
           "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
           "detail": "",
+          "romanization": "10%",
         },
         {
           "id": "19056",
           "name": "上原亜衣",
           "image": "https://www.minnano-av.com/p_actress_125_125/010/159817.jpg",
           "detail": "",
+          "romanization": "10%",
         }
       ]
     },

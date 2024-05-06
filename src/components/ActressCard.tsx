@@ -33,6 +33,7 @@ export default function ActressCard(prop: {
   actressID: string;
   name: string;
   image: string;
+  romanization?: string;
   children?: ReactNode;
 }) {
   const classes = useStyles();
@@ -68,6 +69,7 @@ export default function ActressCard(prop: {
             </Avatar>
           }
           title={prop.name}
+          subheader={prop.romanization ? "相似度: " + prop.romanization : ""}
         />
       </div>
       {

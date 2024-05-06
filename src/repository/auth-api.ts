@@ -1,8 +1,9 @@
 import { authAPIRepo } from "../domain/auth"
 import { verifyCodeAPIResponse } from "../domain/auth"
+import { apiURL } from "../config"
 
 const createAuthAPIRepo = (): authAPIRepo => {
-  const baseURL = process.env.REACT_APP_API_URL
+  const baseURL = apiURL
 
   return {
     verifyLIFFToken: async (liffToken: string): Promise<verifyCodeAPIResponse> => {

@@ -3,6 +3,7 @@ export interface actress {
   image: string;
   name: string;
   detail: string;
+  romanization?: string;
 }
 
 export interface actressAPIRepo {
