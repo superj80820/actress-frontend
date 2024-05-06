@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
@@ -19,6 +19,7 @@ import { ErrorAlreadyDone } from '../domain/error';
 import TextField from '@material-ui/core/TextField';
 import AdCard from "../components/AdCard";
 import DonateCard from "../components/DonateCard";
+import Pagination from '@material-ui/lab/Pagination';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -53,33 +54,49 @@ export const NameSearch = (prop: {
   const [uploadTitle, setUploadTitle] = useState(uploadOriginTitle)
   const [actresses, setActresses] = useState<actress[]>([])
   const [name, setName] = useState('');
+  const limit = 30
+  let page = 1
+  const [pageCount, setPageCount] = useState(1)
 
+  const fetchSearchByName = useCallback((page: number, limit: number) => {
+    if (!authInformation || authInformation.token === null) {
+      return
+    }
+    const token = authInformation.token
+
+    if (name) {
+      setUploadTitle("搜尋中...")
+      prop.actressAPIRepo.searchActressByName(name, page, limit, token)
+        .then(actressWithPagination => {
+          if (actressWithPagination.actresses.length <= 0) {
+            alert("無相似姓名女星")
+            setUploadTitle(uploadOriginTitle)
+          } else {
+            setActresses(actressWithPagination.actresses)
+            setUploadTitle(uploadOriginTitle)
+          }
+          setPageCount(Math.floor(actressWithPagination.total / actressWithPagination.limit) + 1)
+        })
+        .catch(err => {
+          if (err instanceof ErrorToken) {
+            navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`)
+            return
+          }
+          console.error("upload failed", err)
+          alert("上傳失敗")
+          setUploadTitle(uploadOriginTitle)
+        })
+    }
+  }, [actressID, authInformation, name, navigate, prop.actressAPIRepo])
+
+
+  const onChangePagination = (page: number) => {
+    fetchSearchByName(page, limit)
+  }
 
   useEffect(() => {
     console.debug("name search page actressID:", actressID);
   })
-
-  const onClick = async (token: string) => {
-    if (name) {
-      setUploadTitle("搜尋中...")
-      const actresses = await prop.actressAPIRepo.searchActressByName(name, token).catch(err => {
-        if (err instanceof ErrorToken) {
-          navigate(`/login?${actressID ? `actressID=${actressID}` : ""}`)
-          return
-        }
-        console.error("upload failed", err)
-        alert("上傳失敗")
-        setUploadTitle(uploadOriginTitle)
-      })
-      if (!actresses || actresses.length <= 0) {
-        alert("搜尋失敗")
-        setUploadTitle(uploadOriginTitle)
-        return
-      }
-      setActresses(actresses)
-      setUploadTitle(uploadOriginTitle)
-    }
-  };
 
   const addFavorite = async (actressID: string, token: string) => {
     prop.actressAPIRepo.addFavorite(actressID, token)
@@ -101,11 +118,49 @@ export const NameSearch = (prop: {
     </IconButton>
   )
 
+  const searchElement = () => (
+    <div className="grid-item-full-width">
+      < Card
+        className={classes.root}
+      >
+        <div>
+          <CardHeader
+            avatar={
+              <Avatar
+                className={classes.avatar}
+              >
+                名
+              </Avatar>
+            }
+            title={uploadTitle}
+          />
+        </div>
+        <CardContent>
+          <TextField
+            id="name-input"
+            label="姓名"
+            fullWidth={true}
+            onChange={event => { setName(event.target.value) }}
+            InputProps={{
+              onClick: () => {
+                if (authInformation === null || authInformation.token === null) {
+                  return
+                }
+                return fetchSearchByName(page, limit)
+              },
+              endAdornment: <SearchButton />
+            }}
+          />
+        </CardContent>
+      </Card >
+    </div>
+  )
 
   return (
     actresses.length !== 0 ?
       <>
-        <div className="grid-item-center-first">
+        {searchElement()}
+        <div className="grid-item-full-width">
           <Scroll>
             {[
               <AdCard key={"adCard"} />,
@@ -157,42 +212,16 @@ export const NameSearch = (prop: {
             ))
           }
         </GridActresses>
+        {
+          pageCount ?
+            <div className="grid-item-full-center">
+              <Pagination onChange={(_, page) => onChangePagination(page)} count={pageCount} color="secondary" />
+            </div>
+            :
+            <></>
+        }
       </>
       :
-      <div className="grid-item-center-second">
-        < Card
-          className={classes.root}
-        >
-          <div>
-            <CardHeader
-              avatar={
-                <Avatar
-                  className={classes.avatar}
-                >
-                  名
-                </Avatar>
-              }
-              title={uploadTitle}
-            />
-          </div>
-          <CardContent>
-            <TextField
-              id="name-input"
-              label="姓名"
-              fullWidth={true}
-              onChange={event => { setName(event.target.value) }}
-              InputProps={{
-                onClick: () => {
-                  if (authInformation === null || authInformation.token === null) {
-                    return
-                  }
-                  return onClick(authInformation.token)
-                },
-                endAdornment: <SearchButton />
-              }}
-            />
-          </CardContent>
-        </Card >
-      </div>
+      searchElement()
   )
 }

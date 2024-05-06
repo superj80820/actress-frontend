@@ -11,6 +11,7 @@
     "@line/liff": "^2.23.2",
     "@material-ui/core": "^4.12.4",
     "@material-ui/icons": "^4.11.3",
+    "@material-ui/lab": "^4.0.0-alpha.61",
     "@material-ui/styles": "^4.10.0",
     "@msgpack/msgpack": "^3.0.0-beta2",
     "@testing-library/jest-dom": "^4.2.4",

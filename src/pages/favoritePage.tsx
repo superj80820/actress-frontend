@@ -11,7 +11,7 @@ export default function FavoritePage(prop: {
     <>
       <Bar />
       <div className="grid-container">
-        <div className="grid-item-center-first">
+        <div className="grid-item-full-width">
           <Scroll>
             {[
               <AdCard key={"adCard"} />,

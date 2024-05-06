@@ -1,6 +1,31 @@
 import React, { useRef, useState, useEffect, ReactNode } from 'react'
 
+function getWindowDimensions() {
+  const { innerWidth: width, innerHeight: height } = window;
+  return {
+    width,
+    height
+  };
+}
+
+function useWindowDimensions() {
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions());
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowDimensions(getWindowDimensions());
+    }
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return windowDimensions;
+}
+
+
 const ScrollContainer = (props: { children: ReactNode[] }) => {
+  const { width } = useWindowDimensions();
   const scrollContainerRef = useRef(null);
   const [justifyContent, setJustifyContent] = useState('center');
 
@@ -24,7 +49,10 @@ const ScrollContainer = (props: { children: ReactNode[] }) => {
   }, [props.children]);
 
   return (
-    <div className="scroll-container" ref={scrollContainerRef} style={{ justifyContent: justifyContent }}>
+    <div className="scroll-container" ref={scrollContainerRef} style={{
+      width: `${width}px`,
+      justifyContent: justifyContent
+    }}>
       {props.children.map((item, index) => (
         <div key={index}>
           {item}

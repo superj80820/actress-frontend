@@ -109,10 +109,49 @@ export const ImageSearch = (prop: {
     }
   };
 
+  const searchElement = () => (
+    <div className="grid-item-full-width">
+      <Card
+        className={classes.root}
+      >
+        <div>
+          <CardHeader
+            avatar={
+              <Avatar
+                className={classes.avatar}
+              >
+                搜
+              </Avatar>
+            }
+            title={uploadTitle}
+          />
+        </div>
+        <CardContent>
+          <div>
+            <input
+              accept="image/*"
+              className={classes.input}
+              id="contained-button-file"
+              multiple
+              type="file"
+              onChange={onFileChange}
+            />
+            <label htmlFor="contained-button-file">
+              <Button variant="outlined" fullWidth={true} component="span">
+                上傳圖片
+              </Button>
+            </label>
+          </div>
+        </CardContent>
+      </Card >
+    </div>
+  )
+
   return (
     actresses !== null && actresses.length !== 0 ?
       <>
-        <div className="grid-item-center-first">
+        {searchElement()}
+        <div className="grid-item-full-width">
           <Scroll>
             {[
               <AdCard key={"adCard"} />,
@@ -166,40 +205,6 @@ export const ImageSearch = (prop: {
         </GridActresses >
       </>
       :
-      <div className="grid-item-center-second">
-        <Card
-          className={classes.root}
-        >
-          <div>
-            <CardHeader
-              avatar={
-                <Avatar
-                  className={classes.avatar}
-                >
-                  搜
-                </Avatar>
-              }
-              title={uploadTitle}
-            />
-          </div>
-          <CardContent>
-            <div>
-              <input
-                accept="image/*"
-                className={classes.input}
-                id="contained-button-file"
-                multiple
-                type="file"
-                onChange={onFileChange}
-              />
-              <label htmlFor="contained-button-file">
-                <Button variant="outlined" fullWidth={true} component="span">
-                  上傳圖片
-                </Button>
-              </label>
-            </div>
-          </CardContent>
-        </Card >
-      </div>
+      searchElement()
   )
 }
